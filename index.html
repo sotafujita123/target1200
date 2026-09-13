@@ -222,7 +222,18 @@
       border-radius: 8px;
       border: 1px solid #e5e7eb;
       margin-bottom: 20px;
-      text-align: center;
+      text-align: left;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .setting-item:last-child {
+      margin-bottom: 0;
     }
 
     .settings-box select {
@@ -230,7 +241,6 @@
       font-size: 1rem;
       border-radius: 6px;
       border: 1px solid #cbd5e1;
-      margin-left: 10px;
     }
 
     .action-btn {
@@ -330,7 +340,7 @@
 <body>
 
 <div class="container">
-  <!-- ヘッダー（三本線メニューボタン常時表示） -->
+  <!-- ヘッダー（常時表示の三本線メニュー付き） -->
   <header>
     <h1>ターゲット1200 (1051〜1100)</h1>
     <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
@@ -362,12 +372,21 @@
     <div id="page-test-setup" class="page">
       <h2>テスト設定</h2>
       <div class="settings-box">
-        <label for="question-count">出題数：</label>
-        <select id="question-count">
-          <option value="10">10問</option>
-          <option value="20">20問</option>
-          <option value="50" selected>50問 (全範囲)</option>
-        </select>
+        <div class="setting-item">
+          <label for="question-count">出題数：</label>
+          <select id="question-count">
+            <option value="10">10問</option>
+            <option value="20">20問</option>
+            <option value="50" selected>50問 (全範囲)</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label for="show-translation">和訳の表示：</label>
+          <select id="show-translation">
+            <option value="show" selected>表示する</option>
+            <option value="hide">隠す (非表示)</option>
+          </select>
+        </div>
       </div>
       <button class="action-btn" onclick="startTest()">テスト開始</button>
     </div>
@@ -456,13 +475,14 @@ const quizData = [
   { no: 1100, word: "election", sentence: "The ( ___ ) will be held soon.", jp: "もうすぐ選挙が行われる。" }
 ];
 
-let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_v10')) || [];
+let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_v11')) || [];
 let currentQuestions = [];
 let currentIndex = 0;
 let score = 0;
+let showTranslationSetting = 'show'; // 和訳設定保持用
 
 function saveWrongList() {
-  localStorage.setItem('target1200_wrong_v10', JSON.stringify(wrongList));
+  localStorage.setItem('target1200_wrong_v11', JSON.stringify(wrongList));
 }
 
 function toggleMenu() {
@@ -536,6 +556,8 @@ function renderWrongGrid() {
 
 function startTest() {
   const count = parseInt(document.getElementById('question-count').value);
+  showTranslationSetting = document.getElementById('show-translation').value;
+
   currentQuestions = [...quizData].sort(() => Math.random() - 0.5).slice(0, count);
   currentIndex = 0;
   score = 0;
@@ -552,7 +574,16 @@ function showQuestion() {
   document.getElementById('next-btn').classList.add('hidden');
 
   document.getElementById('en-sentence').innerHTML = q.sentence.replace('( ___ )', '<span class="blank">?</span>');
-  document.getElementById('jp-translation').innerText = q.jp;
+  
+  // 和訳の表示・非表示を切り替え
+  const jpEl = document.getElementById('jp-translation');
+  if (showTranslationSetting === 'show') {
+    jpEl.innerText = q.jp;
+    jpEl.style.display = 'block';
+  } else {
+    jpEl.innerText = '';
+    jpEl.style.display = 'none';
+  }
 
   const optionsContainer = document.getElementById('options-container');
   optionsContainer.innerHTML = '';
@@ -576,12 +607,19 @@ function selectAnswer(selectedBtn, choice, q) {
   const buttons = document.querySelectorAll('.opt-btn');
   buttons.forEach(btn => btn.disabled = true);
 
+  // 非表示にしていた場合、正解判定後に和訳を自動で表示してあげる親切設計に
+  const jpEl = document.getElementById('jp-translation');
+  if (showTranslationSetting === 'hide') {
+    jpEl.innerText = q.jp;
+    jpEl.style.display = 'block';
+  }
+
   if (choice === q.word) {
     selectedBtn.classList.add('correct-flash');
     score++;
     wrongList = wrongList.filter(no => no !== q.no);
     saveWrongList();
-    setTimeout(nextQuestion, 800);
+    setTimeout(nextQuestion, 1000);
   } else {
     selectedBtn.classList.add('wrong-flash');
     buttons.forEach(btn => {
