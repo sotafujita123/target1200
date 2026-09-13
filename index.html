@@ -41,6 +41,32 @@
       color: #374151;
     }
 
+    /* ナビゲーションメニュー */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 10px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 10px;
+      background: #e5e7eb;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
     .status-bar {
       display: flex;
       justify-content: space-between;
@@ -122,20 +148,70 @@
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
+      margin-bottom: 10px;
     }
 
     .action-btn:hover {
       background: var(--primary-hover);
     }
 
-    .review-list {
-      margin-top: 20px;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 15px;
+    .cancel-btn {
+      background: #6b7280;
+    }
+    .cancel-btn:hover {
+      background: #4b5563;
     }
 
+    /* 設定エリア */
+    .settings-box {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .settings-box select {
+      padding: 8px 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      margin-left: 10px;
+    }
+
+    /* 勉強用カードリスト（クイズレット風） */
+    .study-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .study-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .study-word {
+      font-size: 1.1rem;
+      color: #111827;
+    }
+    .study-sentence {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-top: 4px;
+    }
+
+    /* 間違えた単語リストのスタイル */
     .review-item {
-      padding: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
       border-bottom: 1px solid #f1f5f9;
       font-size: 0.9rem;
     }
@@ -146,36 +222,72 @@
 <body>
 
 <div class="container">
-  <h1>ターゲット1200 (No.1051〜1100) テスト</h1>
+  <h1>ターゲット1200 (No.1051〜1100) 学習アプリ</h1>
   
-  <div id="quiz-screen">
-    <div class="status-bar">
-      <span id="progress">問題 1 / 50</span>
-      <span id="score">正解数: 0</span>
-    </div>
-
-    <div class="blank-box">
-      <div id="en-sentence">Loading...</div>
-      <div id="jp-translation" class="jp-text"></div>
-    </div>
-
-    <div id="options-container" class="options"></div>
-
-    <button id="next-btn" class="action-btn hidden" onclick="nextQuestion()">次の問題へ</button>
+  <!-- ナビゲーションメニュータブ -->
+  <div class="nav-tabs" id="nav-tabs">
+    <button class="nav-btn active" onclick="switchTab('test')">問題 (テスト)</button>
+    <button class="nav-btn" onclick="switchTab('wrong')">間違えた英単語</button>
+    <button class="nav-btn" onclick="switchTab('study')">勉強用 (単語帳)</button>
   </div>
 
-  <div id="result-screen" class="hidden">
-    <h2>テスト終了！</h2>
-    <p id="final-score" style="font-size: 1.2rem; font-weight: bold;"></p>
-    
-    <button class="action-btn" onclick="startQuiz(false)" style="margin-bottom: 10px;">もう一度全問解く</button>
-    <button id="review-quiz-btn" class="action-btn" style="background:#ea580c;" onclick="startQuiz(true)">間違えた問題だけ解く</button>
+  <!-- ① テスト画面タブ -->
+  <div id="tab-test" class="tab-content">
+    <div id="setup-screen">
+      <div class="settings-box">
+        <p style="margin-top:0; font-weight:bold;">テスト設定</p>
+        <label for="question-count">出題数：</label>
+        <select id="question-count">
+          <option value="10">10問</option>
+          <option value="50" selected>全50問</option>
+        </select>
+      </div>
+      <button class="action-btn" onclick="startTest(false)">テストを始める</button>
+    </div>
 
-    <div class="review-list">
-      <h3>復習用ミスリスト (<span id="wrong-count">0</span>件)</h3>
-      <div id="wrong-list-container"></div>
+    <div id="quiz-screen" class="hidden">
+      <div class="status-bar">
+        <span id="progress">問題 1 / 10</span>
+        <span id="score">正解数: 0</span>
+      </div>
+
+      <div class="blank-box">
+        <div id="en-sentence">Loading...</div>
+        <div id="jp-translation" class="jp-text"></div>
+      </div>
+
+      <div id="options-container" class="options"></div>
+
+      <button id="next-btn" class="action-btn hidden" onclick="nextQuestion()">次の問題へ</button>
+      <button class="action-btn cancel-btn" onclick="abortQuiz()">途中でやめる (ホームに戻る)</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h2>テスト終了！</h2>
+      <p id="final-score" style="font-size: 1.2rem; font-weight: bold; text-align: center;"></p>
+      
+      <button class="action-btn" onclick="startTest(false)" style="margin-bottom: 10px;">もう一度同じ設定で解く</button>
+      <button id="review-quiz-btn" class="action-btn" style="background:#ea580c; margin-bottom: 10px;" onclick="startWrongTest()">間違えた問題だけ解く</button>
+      <button class="action-btn cancel-btn" onclick="abortQuiz()">ホームに戻る</button>
     </div>
   </div>
+
+  <!-- ② 間違えた英単語タブ -->
+  <div id="tab-wrong" class="tab-content hidden">
+    <h2>間違えた英単語リスト (<span id="wrong-count">0</span>件)</h2>
+    <div style="margin-bottom: 15px;">
+      <button class="action-btn" id="start-wrong-tab-btn" onclick="startWrongTest()" style="background:#ea580c;">この中からテストを始める</button>
+    </div>
+    <div id="wrong-list-container"></div>
+  </div>
+
+  <!-- ③ 勉強用タブ (クイズレット風) -->
+  <div id="tab-study" class="tab-content hidden">
+    <h2>勉強用単語帳 (No.1051〜1100)</h2>
+    <p style="font-size: 0.9rem; color: #6b7280;">すべての単語、意味、例文を確認できます。</p>
+    <div id="study-list-container"></div>
+  </div>
+
 </div>
 
 <script>
@@ -236,30 +348,71 @@ const quizData = [
 let currentQuestions = [];
 let currentIndex = 0;
 let score = 0;
-let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_user_exact')) || [];
+let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_v7')) || [];
 
 function saveWrongList() {
-  localStorage.setItem('target1200_wrong_user_exact', JSON.stringify(wrongList));
+  localStorage.setItem('target1200_wrong_v7', JSON.stringify(wrongList));
+  updateWrongListView();
 }
 
-function startQuiz(onlyWrong = false) {
-  if (onlyWrong) {
+/* タブ切り替え制御 */
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+  if (tabName === 'test') {
+    document.getElementById('tab-test').classList.remove('hidden');
+    document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  } else if (tabName === 'wrong') {
+    document.getElementById('tab-wrong').classList.remove('hidden');
+    document.querySelectorAll('.nav-btn')[1].classList.add('active');
+    updateWrongListView();
+  } else if (tabName === 'study') {
+    document.getElementById('tab-study').classList.remove('hidden');
+    document.querySelectorAll('.nav-btn')[2].classList.add('active');
+    renderStudyList();
+  }
+}
+
+/* テスト開始処理 */
+function startTest(isWrongOnly = false, customQuestions = null) {
+  if (customQuestions) {
+    currentQuestions = [...customQuestions];
+  } else if (isWrongOnly) {
     if (wrongList.length === 0) {
       alert("間違えた問題はありません！");
       return;
     }
     currentQuestions = quizData.filter(q => wrongList.includes(q.no));
   } else {
-    currentQuestions = [...quizData];
+    const count = parseInt(document.getElementById('question-count').value);
+    currentQuestions = [...quizData].sort(() => Math.random() - 0.5).slice(0, count);
   }
 
   currentQuestions.sort(() => Math.random() - 0.5);
   currentIndex = 0;
   score = 0;
 
-  document.getElementById('quiz-screen').classList.remove('hidden');
+  document.getElementById('setup-screen').classList.add('hidden');
   document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('quiz-screen').classList.remove('hidden');
+  
+  // テスト中はナビゲーションタブを隠す（途中でやめるボタンがあるため）
+  document.getElementById('nav-tabs').classList.add('hidden');
+
   showQuestion();
+}
+
+function startWrongTest() {
+  switchTab('test');
+  startTest(true);
+}
+
+function abortQuiz() {
+  document.getElementById('quiz-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('setup-screen').classList.remove('hidden');
+  document.getElementById('nav-tabs').classList.remove('hidden');
 }
 
 function showQuestion() {
@@ -327,35 +480,68 @@ function nextQuestion() {
 function showResult() {
   document.getElementById('quiz-screen').classList.add('hidden');
   document.getElementById('result-screen').classList.remove('hidden');
+  document.getElementById('nav-tabs').classList.remove('hidden');
 
   document.getElementById('final-score').innerText = `${currentQuestions.length}問中 ${score}問 正解！`;
 
   const reviewBtn = document.getElementById('review-quiz-btn');
   reviewBtn.style.display = wrongList.length > 0 ? 'block' : 'none';
-
-  renderWrongList();
 }
 
-function renderWrongList() {
+/* 間違えた英単語リストの表示更新 */
+function updateWrongListView() {
   document.getElementById('wrong-count').innerText = wrongList.length;
   const container = document.getElementById('wrong-list-container');
+  const btn = document.getElementById('start-wrong-tab-btn');
   container.innerHTML = '';
 
   if (wrongList.length === 0) {
-    container.innerHTML = '<p style="color:#22c55e;">現在復習する問題はありません！全問正解です！</p>';
+    container.innerHTML = '<p style="color:#22c55e; text-align:center; padding:20px;">現在間違えた問題はありません！素晴らしい！</p>';
+    if (btn) btn.style.display = 'none';
     return;
   }
+
+  if (btn) btn.style.display = 'block';
 
   const wrongItems = quizData.filter(q => wrongList.includes(q.no));
   wrongItems.forEach(item => {
     const div = document.createElement('div');
     div.className = 'review-item';
-    div.innerHTML = `<strong>No.${item.no} ${item.word}</strong> - ${item.jp}<br><small style="color:#6b7280">${item.sentence}</small>`;
+    div.innerHTML = `
+      <div>
+        <strong>No.${item.no}</strong><br>
+        <small style="color:#6b7280">${item.sentence}</small><br>
+        <span>${item.jp}</span>
+      </div>
+      <div style="font-weight: bold; color: var(--primary); font-size: 1.1rem; background: #e0e7ff; padding: 4px 10px; border-radius: 6px;">
+        ${item.word}
+      </div>
+    `;
     container.appendChild(div);
   });
 }
 
-startQuiz();
+/* 勉強用単語帳の生成（クイズレット風） */
+function renderStudyList() {
+  const container = document.getElementById('study-list-container');
+  if (container.children.length > 0) return; // 一度生成したら再描画しない
+
+  quizData.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'study-card';
+    card.innerHTML = `
+      <div class="study-header">
+        <span>No. ${item.no}</span>
+      </div>
+      <div class="study-word"><strong>${item.word}</strong> : ${item.jp}</div>
+      <div class="study-sentence">例文: ${item.sentence}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// 初期化時に間違えた単語リストのカウントを同期
+updateWrongListView();
 </script>
 
 </body>
