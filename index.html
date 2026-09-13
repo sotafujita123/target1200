@@ -179,66 +179,67 @@
 </div>
 
 <script>
+// 写真から確認した 1051: income ～ 1100: liberty の完全50問
 const quizData = [
-  { no: 1051, word: "cash", sentence: "Pay in ( ___ ).", jp: "現金で支払う。" },
-  { no: 1052, word: "earn", sentence: "He works to ( ___ ) money.", jp: "彼はお金を稼ぐために働いている。" },
-  { no: 1053, word: "reward", sentence: "a ( ___ ) for hard work", jp: "努力への報酬" },
-  { no: 1054, word: "income", sentence: "It is not easy to save money on a low ( ___ ).", jp: "少ない収入で貯金をするのは簡単ではない。" },
-  { no: 1055, word: "budget", sentence: "The movie was made on a tight ( ___ ).", jp: "その映画は限られた予算で作られた。" },
-  { no: 1056, word: "tax", sentence: "The ( ___ ) on cigarettes has been increased.", jp: "たばこへの税金が引き上げられてきている。" },
-  { no: 1057, word: "consume", sentence: "How much water is ( ___ )d daily per person?", jp: "1日1人当たりどれくらいの量の水が消費されているのだろうか。" },
-  { no: 1058, word: "benefit", sentence: "The group created a new site for the ( ___ ) of tourists.", jp: "その団体は観光客のために新しいサイトを立ち上げた。" },
-  { no: 1059, word: "wealth", sentence: "She built great ( ___ ) by starting a business.", jp: "彼女は起業して相当な富を築いた。" },
-  { no: 1060, word: "price", sentence: "I bought this watch at half ( ___ ).", jp: "私はこの腕時計を半額で買った。" },
-  { no: 1061, word: "cheap", sentence: "The hotel was ( ___ ) and cheerful.", jp: "そのホテルは安くて心地よかった。" },
-  { no: 1062, word: "reasonable", sentence: "The shop sells good quality clothing at ( ___ ) prices.", jp: "その店は質の良い服を手頃な価格で売っている。" },
-  { no: 1063, word: "sale", sentence: "The department store is having a ( ___ ) next week.", jp: "そのデパートでは来週セールがある。" },
-  { no: 1064, word: "charge", sentence: "Their standard delivery is free of ( ___ ).", jp: "その店の標準的な配送は無料だ。" },
-  { no: 1065, word: "advertisement", sentence: "I saw an ( ___ ) for the university on the train.", jp: "電車の車内でその大学の広告を見た。" },
-  { no: 1066, word: "commercial", sentence: "Her new album was a great ( ___ ) success.", jp: "彼女の新しいアルバムは商業的に大成功を収めた。" },
-  { no: 1067, word: "trade", sentence: "The ( ___ ) between the two countries has grown.", jp: "その二国間の貿易は増大した。" },
-  { no: 1068, word: "import", sentence: "Japan ( ___ )s oil mainly from the Middle East.", jp: "日本は石油を主に中東から輸入している。" },
-  { no: 1069, word: "export", sentence: "Japan ( ___ )s cars to America and many other countries.", jp: "日本は車をアメリカや他の多くの国々に輸出している。" },
-  { no: 1070, word: "factory", sentence: "They work in a car ( ___ ) in shifts.", jp: "彼らは自動車工場で交替制で働いている。" },
-  { no: 1071, word: "agriculture", sentence: "Large companies have been getting into ( ___ ).", jp: "大手企業の農業への参入が進んでいる。" },
-  { no: 1072, word: "society", sentence: "We live in a free ( ___ ).", jp: "私たちは自由な社会に暮らしている。" },
-  { no: 1073, word: "community", sentence: "The whole ( ___ ) works together to reduce waste.", jp: "地域社会全体でごみの減量に協力している。" },
-  { no: 1074, word: "organization", sentence: "It is supported by many voluntary ( ___ )s.", jp: "それは多くのボランティア団体により支援されている。" },
-  { no: 1075, word: "committee", sentence: "I was on the executive ( ___ ).", jp: "私は実行委員会のメンバーだった。" },
-  { no: 1076, word: "charity", sentence: "She gave a lot of money to ( ___ ).", jp: "彼女は多額のお金を慈善事業に寄付した。" },
-  { no: 1077, word: "citizen", sentence: "He chose to become a Japanese ( ___ ).", jp: "彼は日本国民となることを選んだ。" },
-  { no: 1078, word: "duty", sentence: "They have a ( ___ ) to tell the truth.", jp: "彼らには真実を語る義務がある。" },
-  { no: 1079, word: "law", sentence: "It's against the ( ___ ) to park on this street.", jp: "この通りに駐車するのは違法だ。" },
-  { no: 1080, word: "judge", sentence: "She did her duty as a lay ( ___ ).", jp: "彼女は裁判員としての職務を果たした。" },
-  { no: 1081, word: "court", sentence: "He took the publisher to ( ___ ) for the article.", jp: "彼はその記事のことで出版社を裁判に訴えた。" },
-  { no: 1082, word: "guard", sentence: "The police were on ( ___ ) at the airport.", jp: "警察が空港で警戒任務に就いていた。" },
-  { no: 1083, word: "arrest", sentence: "The man was ( ___ )ed for drunk driving.", jp: "その男は酒気帯び運転で逮捕された。" },
-  { no: 1084, word: "punish", sentence: "They were ( ___ )ed for smoking.", jp: "彼らは喫煙で罰せられた。" },
-  { no: 1085, word: "crime", sentence: "The newspaper says he committed a serious ( ___ ).", jp: "新聞によると彼は重大な犯罪を犯したそうだ。" },
-  { no: 1086, word: "murder", sentence: "The shocking ( ___ ) was committed in the neighboring town.", jp: "隣町でその衝撃的な殺人事件は起こった。" },
-  { no: 1087, word: "shoot", sentence: "The journalist was ( ___ ) in the leg.", jp: "その記者は脚を撃たれた。" },
-  { no: 1088, word: "steal", sentence: "I had my wallet ( ___ )en in the crowd.", jp: "私は人混みで財布を盗まれてしまった。" },
-  { no: 1089, word: "rob", sentence: "She was ( ___ )bed of her jewels yesterday.", jp: "彼女は昨日自宅で宝石を奪われた。" },
-  { no: 1090, word: "thief", sentence: "A group of car ( ___ )ves was caught.", jp: "自動車窃盗団が捕まった。" },
-  { no: 1091, word: "victim", sentence: "The charity assists the ( ___ )s of crime.", jp: "その慈善団体は犯罪被害者の支援をしている。" },
-  { no: 1092, word: "drug", sentence: "The actor was arrested for taking ( ___ )s.", jp: "その俳優は麻薬の使用で逮捕された。" },
-  { no: 1093, word: "poverty", sentence: "Almost half of the people living in ( ___ ) are children.", jp: "貧困の中で暮らしている人のほぼ半数は子供だ。" },
-  { no: 1094, word: "government", sentence: "The Japanese ( ___ ) strongly supported the decision.", jp: "日本政府はその決定を強く支持した。" },
-  { no: 1095, word: "policy", sentence: "He said the government's economic ( ___ )ies were not successful.", jp: "政府の経済政策はうまくいっていないと彼は述べた。" },
-  { no: 1096, word: "nation", sentence: "Southeast Asian ( ___ )s attended the meeting.", jp: "東南アジア諸国がその会議に出席した。" },
-  { no: 1097, word: "capital", sentence: "What's the ( ___ ) of India?", jp: "インドの首都はどこですか。" },
-  { no: 1098, word: "international", sentence: "We must protect human rights under ( ___ ) law.", jp: "私たちは国際法の下、人権を擁護しなければならない。" },
-  { no: 1099, word: "global", sentence: "Terrorism is a serious ( ___ ) problem.", jp: "テロリズムは深刻な世界的問題だ。" },
-  { no: 1100, word: "election", sentence: "The ( ___ ) will be held soon.", jp: "もうすぐ選挙が行われる。" }
+  { no: 1051, word: "income", sentence: "It is not easy to save money on a low ( ___ ).", jp: "少ない収入で貯金をするのは簡単ではない。" },
+  { no: 1052, word: "budget", sentence: "The movie was made on a tight ( ___ ).", jp: "その映画は限られた予算で作られた。" },
+  { no: 1053, word: "tax", sentence: "The ( ___ ) on cigarettes has been increased.", jp: "たばこへの税金が引き上げられてきている。" },
+  { no: 1054, word: "consume", sentence: "How much water is ( ___ )d daily per person?", jp: "1日1人当たりどれくらいの量の水が消費されているのだろうか。" },
+  { no: 1055, word: "benefit", sentence: "The group created a new site for the ( ___ ) of tourists.", jp: "その団体は観光客のために新しいサイトを立ち上げた。" },
+  { no: 1056, word: "wealth", sentence: "She built great ( ___ ) by starting a business.", jp: "彼女は起業して相当な富を築いた。" },
+  { no: 1057, word: "price", sentence: "I bought this watch at half ( ___ ).", jp: "私はこの腕時計を半額で買った。" },
+  { no: 1058, word: "cheap", sentence: "The hotel was ( ___ ) and cheerful.", jp: "そのホテルは安くて心地よかった。" },
+  { no: 1059, word: "reasonable", sentence: "The shop sells good quality clothing at ( ___ ) prices.", jp: "その店は質の良い服を手頃な価格で売っている。" },
+  { no: 1060, word: "sale", sentence: "The department store is having a ( ___ ) next week.", jp: "そのデパートでは来週セールがある。" },
+  { no: 1061, word: "charge", sentence: "Their standard delivery is free of ( ___ ).", jp: "その店の標準的な配送は無料だ。" },
+  { no: 1062, word: "advertisement", sentence: "I saw an ( ___ ) for the university on the train.", jp: "電車の車内でその大学の広告を見た。" },
+  { no: 1063, word: "commercial", sentence: "Her new album was a great ( ___ ) success.", jp: "彼女の新しいアルバムは商業的に大成功を収めた。" },
+  { no: 1064, word: "trade", sentence: "The ( ___ ) between the two countries has grown.", jp: "その二国間の貿易は増大した。" },
+  { no: 1065, word: "import", sentence: "Japan ( ___ )s oil mainly from the Middle East.", jp: "日本は石油を主に中東から輸入している。" },
+  { no: 1066, word: "export", sentence: "Japan ( ___ )s cars to America and many other countries.", jp: "日本は車をアメリカや他の多くの国々に輸出している。" },
+  { no: 1067, word: "factory", sentence: "They work in a car ( ___ ) in shifts.", jp: "彼らは自動車工場で交替制で働いている。" },
+  { no: 1068, word: "agriculture", sentence: "Large companies have been getting into ( ___ ).", jp: "大手企業の農業への参入が進んでいる。" },
+  { no: 1069, word: "society", sentence: "We live in a free ( ___ ).", jp: "私たちは自由な社会に暮らしている。" },
+  { no: 1070, word: "community", sentence: "The whole ( ___ ) works together to reduce waste.", jp: "地域社会全体でごみの減量に協力している。" },
+  { no: 1071, word: "organization", sentence: "It is supported by many voluntary ( ___ )s.", jp: "それは多くのボランティア団体により支援されている。" },
+  { no: 1072, word: "committee", sentence: "I was on the executive ( ___ ).", jp: "私は実行委員会のメンバーだった。" },
+  { no: 1073, word: "charity", sentence: "She gave a lot of money to ( ___ ).", jp: "彼女は多額のお金を慈善事業に寄付した。" },
+  { no: 1074, word: "citizen", sentence: "He chose to become a Japanese ( ___ ).", jp: "彼は日本国民となることを選んだ。" },
+  { no: 1075, word: "duty", sentence: "They have a ( ___ ) to tell the truth.", jp: "彼らには真実を語る義務がある。" },
+  { no: 1076, word: "law", sentence: "It's against the ( ___ ) to park on this street.", jp: "この通りに駐車するのは違法だ。" },
+  { no: 1077, word: "judge", sentence: "She did her duty as a lay ( ___ ).", jp: "彼女は裁判員としての職務を果たした。" },
+  { no: 1078, word: "court", sentence: "He took the publisher to ( ___ ) for the article.", jp: "彼はその記事のことで出版社を裁判に訴えた。" },
+  { no: 1079, word: "guard", sentence: "The police were on ( ___ ) at the airport.", jp: "警察が空港で警戒任務に就いていた。" },
+  { no: 1080, word: "arrest", sentence: "The man was ( ___ )ed for drunk driving.", jp: "その男は酒気帯び運転で逮捕された。" },
+  { no: 1081, word: "punish", sentence: "They were ( ___ )ed for smoking.", jp: "彼らは喫煙で罰せられた。" },
+  { no: 1082, word: "crime", sentence: "The newspaper says he committed a serious ( ___ ).", jp: "新聞によると彼は重大な犯罪を犯したそうだ。" },
+  { no: 1083, word: "murder", sentence: "The shocking ( ___ ) was committed in the neighboring town.", jp: "隣町でその衝撃的な殺人事件は起こった。" },
+  { no: 1084, word: "shoot", sentence: "The journalist was ( ___ ) in the leg.", jp: "その記者は脚を撃たれた。" },
+  { no: 1085, word: "steal", sentence: "I had my wallet ( ___ )en in the crowd.", jp: "私は人混みで財布を盗まれてしまった。" },
+  { no: 1086, word: "rob", sentence: "She was ( ___ )bed of her jewels yesterday.", jp: "彼女は昨日自宅で宝石を奪われた。" },
+  { no: 1087, word: "thief", sentence: "A group of car ( ___ )ves was caught.", jp: "自動車窃盗団が捕まった。" },
+  { no: 1088, word: "victim", sentence: "The charity assists the ( ___ )s of crime.", jp: "その慈善団体は犯罪被害者の支援をしている。" },
+  { no: 1089, word: "drug", sentence: "The actor was arrested for taking ( ___ )s.", jp: "その俳優は麻薬の使用で逮捕された。" },
+  { no: 1090, word: "poverty", sentence: "Almost half of the people living in ( ___ ) are children.", jp: "貧困の中で暮らしている人のほぼ半数は子供だ。" },
+  { no: 1091, word: "government", sentence: "The Japanese ( ___ ) strongly supported the decision.", jp: "日本政府はその決定を強く支持した。" },
+  { no: 1092, word: "policy", sentence: "He said the government's economic ( ___ )ies were not successful.", jp: "政府の経済政策はうまくいっていないと彼は述べた。" },
+  { no: 1093, word: "nation", sentence: "Southeast Asian ( ___ )s attended the meeting.", jp: "東南アジア諸国がその会議に出席した。" },
+  { no: 1094, word: "capital", sentence: "What's the ( ___ ) of India?", jp: "インドの首都はどこですか。" },
+  { no: 1095, word: "international", sentence: "We must protect human rights under ( ___ ) law.", jp: "私たちは国際法の下、人権を擁護しなければならない。" },
+  { no: 1096, word: "global", sentence: "Terrorism is a serious ( ___ ) problem.", jp: "テロリズムは深刻な世界的問題だ。" },
+  { no: 1097, word: "election", sentence: "The ( ___ ) will be held soon.", jp: "もうすぐ選挙が行われる。" },
+  { no: 1098, word: "vote", sentence: "I ( ___ )d for her in the election.", jp: "私は選挙で彼女に投票した。" },
+  { no: 1099, word: "president", sentence: "The new ( ___ ) was elected after a close race.", jp: "接戦の末、新大統領が選出された。" },
+  { no: 1100, word: "liberty", sentence: "They're worried about losing their civil ( ___ )ies.", jp: "彼らは市民の自由を失うことを心配している。" }
 ];
 
 let currentQuestions = [];
 let currentIndex = 0;
 let score = 0;
-let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_1051_1100')) || [];
+let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_1051_1100_v2')) || [];
 
 function saveWrongList() {
-  localStorage.setItem('target1200_wrong_1051_1100', JSON.stringify(wrongList));
+  localStorage.setItem('target1200_wrong_1051_1100_v2', JSON.stringify(wrongList));
 }
 
 function startQuiz(onlyWrong = false) {
@@ -273,10 +274,11 @@ function showQuestion() {
   const optionsContainer = document.getElementById('options-container');
   optionsContainer.innerHTML = '';
 
-  const otherWords = quizData.filter(item => item.word !== q.word);
+  // 現在の50問の中から正解以外のダミー選択肢を3つ選ぶ
+  const otherWords = quizData.filter(item => item.word !== q.word).map(item => item.word);
   otherWords.sort(() => Math.random() - 0.5);
-  const wrongOptions = otherWords.slice(0, 3).map(item => item.word);
-  
+  const wrongOptions = otherWords.slice(0, 3);
+
   const choices = [q.word, ...wrongOptions].sort(() => Math.random() - 0.5);
 
   choices.forEach(choice => {
