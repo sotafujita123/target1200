@@ -20,7 +20,7 @@
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 0;
       display: flex;
       justify-content: center;
     }
@@ -28,43 +28,227 @@
     .container {
       max-width: 650px;
       width: 100%;
+      min-height: 100vh;
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 24px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ヘッダー（常時表示の三本線メニュー付き） */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     h1 {
-      font-size: 1.25rem;
-      text-align: center;
-      margin-top: 0;
+      font-size: 1.1rem;
+      margin: 0;
       color: #374151;
     }
 
-    /* ナビゲーションメニュー */
-    .nav-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 10px;
+    .menu-toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text);
+      padding: 4px 8px;
     }
 
-    .nav-btn {
-      flex: 1;
-      padding: 10px;
-      background: #e5e7eb;
+    /* スライドメニュー（三本線メニューの中身） */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 250px;
+      height: 100%;
+      background: #ffffff;
+      box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .side-menu.open {
+      right: 0;
+    }
+
+    .side-menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .close-menu-btn {
+      background: none;
       border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .menu-link {
+      padding: 12px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
-      font-size: 0.9rem;
+      margin-bottom: 10px;
+      text-align: left;
+      font-size: 1rem;
       font-weight: bold;
+      color: var(--text);
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .nav-btn.active {
+    .menu-link:hover {
       background: var(--primary);
       color: white;
+      border-color: var(--primary);
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 50;
+      display: none;
+    }
+    .menu-overlay.open {
+      display: block;
+    }
+
+    /* メインコンテンツエリア */
+    .content {
+      padding: 20px;
+      flex: 1;
+      box-sizing: border-box;
+    }
+
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+
+    /* クイズレット風カードスタイル */
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .flashcard {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 120px;
+      cursor: pointer;
+      perspective: 1000px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    .flashcard:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .card-front .word-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .card-front .hint-text {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .card-back {
+      display: none;
+    }
+
+    .flashcard.flipped .card-front {
+      display: none;
+    }
+
+    .flashcard.flipped .card-back {
+      display: block;
+    }
+
+    .card-back .jp-meaning {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .card-back .sentence {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    /* テスト関連のスタイル */
+    .settings-box {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .settings-box select {
+      padding: 8px 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      margin-left: 10px;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-hover);
     }
 
     .status-bar {
@@ -138,160 +322,87 @@
       color: #b91c1c !important;
     }
 
-    .action-btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 10px;
+    .hidden {
+      display: none !important;
     }
-
-    .action-btn:hover {
-      background: var(--primary-hover);
-    }
-
-    .cancel-btn {
-      background: #6b7280;
-    }
-    .cancel-btn:hover {
-      background: #4b5563;
-    }
-
-    /* 設定エリア */
-    .settings-box {
-      background: #f9fafb;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .settings-box select {
-      padding: 8px 12px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-      margin-left: 10px;
-    }
-
-    /* 勉強用カードリスト（クイズレット風） */
-    .study-card {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .study-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      color: var(--primary);
-      margin-bottom: 6px;
-    }
-    .study-word {
-      font-size: 1.1rem;
-      color: #111827;
-    }
-    .study-sentence {
-      font-size: 0.9rem;
-      color: #4b5563;
-      margin-top: 4px;
-    }
-
-    /* 間違えた単語リストのスタイル */
-    .review-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #f1f5f9;
-      font-size: 0.9rem;
-    }
-
-    .hidden { display: none; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>ターゲット1200 (No.1051〜1100) 学習アプリ</h1>
-  
-  <!-- ナビゲーションメニュータブ -->
-  <div class="nav-tabs" id="nav-tabs">
-    <button class="nav-btn active" onclick="switchTab('test')">問題 (テスト)</button>
-    <button class="nav-btn" onclick="switchTab('wrong')">間違えた英単語</button>
-    <button class="nav-btn" onclick="switchTab('study')">勉強用 (単語帳)</button>
+  <!-- ヘッダー（三本線メニューボタン常時表示） -->
+  <header>
+    <h1>ターゲット1200 (1051〜1100)</h1>
+    <button class="menu-toggle-btn" onclick="toggleMenu()">☰</button>
+  </header>
+
+  <!-- スライドメニュー -->
+  <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+  <div class="side-menu" id="side-menu">
+    <div class="side-menu-header">
+      <span style="font-weight: bold;">メニュー</span>
+      <button class="close-menu-btn" onclick="toggleMenu()">✕</button>
+    </div>
+    <button class="menu-link" onclick="switchPage('study')">📖 勉強用 (単語帳)</button>
+    <button class="menu-link" onclick="switchPage('test-setup')">📝 テストを受ける</button>
+    <button class="menu-link" onclick="switchPage('wrong')">❌ 間違えた問題</button>
   </div>
 
-  <!-- ① テスト画面タブ -->
-  <div id="tab-test" class="tab-content">
-    <div id="setup-screen">
+  <!-- メインコンテンツ -->
+  <div class="content">
+
+    <!-- ① 勉強用ページ（最初に開く） -->
+    <div id="page-study" class="page active">
+      <h2>勉強用単語帳 (クイズレット風)</h2>
+      <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;">カードをタップすると、意味と例文が切り替わります。</p>
+      <div class="flashcard-grid" id="study-grid"></div>
+    </div>
+
+    <!-- ② テスト設定・プレイ画面 -->
+    <div id="page-test-setup" class="page">
+      <h2>テスト設定</h2>
       <div class="settings-box">
-        <p style="margin-top:0; font-weight:bold;">テスト設定</p>
         <label for="question-count">出題数：</label>
         <select id="question-count">
           <option value="10">10問</option>
-          <option value="50" selected>全50問</option>
+          <option value="20">20問</option>
+          <option value="50" selected>50問 (全範囲)</option>
         </select>
       </div>
-      <button class="action-btn" onclick="startTest(false)">テストを始める</button>
+      <button class="action-btn" onclick="startTest()">テスト開始</button>
     </div>
 
-    <div id="quiz-screen" class="hidden">
+    <div id="page-quiz" class="page">
       <div class="status-bar">
         <span id="progress">問題 1 / 10</span>
         <span id="score">正解数: 0</span>
       </div>
-
       <div class="blank-box">
         <div id="en-sentence">Loading...</div>
         <div id="jp-translation" class="jp-text"></div>
       </div>
-
       <div id="options-container" class="options"></div>
-
       <button id="next-btn" class="action-btn hidden" onclick="nextQuestion()">次の問題へ</button>
-      <button class="action-btn cancel-btn" onclick="abortQuiz()">途中でやめる (ホームに戻る)</button>
     </div>
 
-    <div id="result-screen" class="hidden">
+    <div id="page-result" class="page" style="text-align: center;">
       <h2>テスト終了！</h2>
-      <p id="final-score" style="font-size: 1.2rem; font-weight: bold; text-align: center;"></p>
-      
-      <button class="action-btn" onclick="startTest(false)" style="margin-bottom: 10px;">もう一度同じ設定で解く</button>
-      <button id="review-quiz-btn" class="action-btn" style="background:#ea580c; margin-bottom: 10px;" onclick="startWrongTest()">間違えた問題だけ解く</button>
-      <button class="action-btn cancel-btn" onclick="abortQuiz()">ホームに戻る</button>
+      <p id="final-score" style="font-size: 1.2rem; font-weight: bold; margin: 20px 0;"></p>
+      <button class="action-btn" onclick="startTest()" style="margin-bottom: 10px;">もう一度解く</button>
+      <button class="action-btn" onclick="switchPage('wrong')" style="background:#ea580c;">間違えた問題を確認する</button>
     </div>
-  </div>
 
-  <!-- ② 間違えた英単語タブ -->
-  <div id="tab-wrong" class="tab-content hidden">
-    <h2>間違えた英単語リスト (<span id="wrong-count">0</span>件)</h2>
-    <div style="margin-bottom: 15px;">
-      <button class="action-btn" id="start-wrong-tab-btn" onclick="startWrongTest()" style="background:#ea580c;">この中からテストを始める</button>
+    <!-- ③ 間違えた問題ページ（カード式） -->
+    <div id="page-wrong" class="page">
+      <h2>間違えた問題リスト (<span id="wrong-count">0</span>件)</h2>
+      <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;">テストで間違えた単語がカード式でここに蓄積されます。</p>
+      <div class="flashcard-grid" id="wrong-grid"></div>
     </div>
-    <div id="wrong-list-container"></div>
-  </div>
 
-  <!-- ③ 勉強用タブ (クイズレット風) -->
-  <div id="tab-study" class="tab-content hidden">
-    <h2>勉強用単語帳 (No.1051〜1100)</h2>
-    <p style="font-size: 0.9rem; color: #6b7280;">すべての単語、意味、例文を確認できます。</p>
-    <div id="study-list-container"></div>
   </div>
-
 </div>
 
 <script>
-// ご指定いただいた通りの完全な50単語リスト（No.1051〜1100）
 const quizData = [
   { no: 1051, word: "cash", sentence: "Pay in ( ___ ).", jp: "現金で支払う。" },
   { no: 1052, word: "earn", sentence: "He works to ( ___ ) money.", jp: "彼はお金を稼ぐために働いている。" },
@@ -345,74 +456,93 @@ const quizData = [
   { no: 1100, word: "election", sentence: "The ( ___ ) will be held soon.", jp: "もうすぐ選挙が行われる。" }
 ];
 
+let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_v10')) || [];
 let currentQuestions = [];
 let currentIndex = 0;
 let score = 0;
-let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_v7')) || [];
 
 function saveWrongList() {
-  localStorage.setItem('target1200_wrong_v7', JSON.stringify(wrongList));
-  updateWrongListView();
+  localStorage.setItem('target1200_wrong_v10', JSON.stringify(wrongList));
 }
 
-/* タブ切り替え制御 */
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+function toggleMenu() {
+  const menu = document.getElementById('side-menu');
+  const overlay = document.getElementById('menu-overlay');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
 
-  if (tabName === 'test') {
-    document.getElementById('tab-test').classList.remove('hidden');
-    document.querySelectorAll('.nav-btn')[0].classList.add('active');
-  } else if (tabName === 'wrong') {
-    document.getElementById('tab-wrong').classList.remove('hidden');
-    document.querySelectorAll('.nav-btn')[1].classList.add('active');
-    updateWrongListView();
-  } else if (tabName === 'study') {
-    document.getElementById('tab-study').classList.remove('hidden');
-    document.querySelectorAll('.nav-btn')[2].classList.add('active');
-    renderStudyList();
+function switchPage(pageId) {
+  toggleMenu();
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+
+  if (pageId === 'study') {
+    renderStudyGrid();
+  } else if (pageId === 'wrong') {
+    renderWrongGrid();
   }
 }
 
-/* テスト開始処理 */
-function startTest(isWrongOnly = false, customQuestions = null) {
-  if (customQuestions) {
-    currentQuestions = [...customQuestions];
-  } else if (isWrongOnly) {
-    if (wrongList.length === 0) {
-      alert("間違えた問題はありません！");
-      return;
-    }
-    currentQuestions = quizData.filter(q => wrongList.includes(q.no));
-  } else {
-    const count = parseInt(document.getElementById('question-count').value);
-    currentQuestions = [...quizData].sort(() => Math.random() - 0.5).slice(0, count);
+function renderStudyGrid() {
+  const grid = document.getElementById('study-grid');
+  grid.innerHTML = '';
+  quizData.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'flashcard';
+    card.onclick = () => card.classList.toggle('flipped');
+    card.innerHTML = `
+      <div class="card-content card-front">
+        <div class="word-title">No.${item.no} : ${item.word}</div>
+        <div class="hint-text">👆 タップして意味・例文を見る</div>
+      </div>
+      <div class="card-content card-back">
+        <div class="jp-meaning">${item.word} - ${item.jp}</div>
+        <div class="sentence">${item.sentence}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderWrongGrid() {
+  const grid = document.getElementById('wrong-grid');
+  document.getElementById('wrong-count').innerText = wrongList.length;
+  grid.innerHTML = '';
+
+  if (wrongList.length === 0) {
+    grid.innerHTML = '<p style="color:#22c55e; text-align:center; padding:20px;">現在間違えた問題はありません！素晴らしい！</p>';
+    return;
   }
 
-  currentQuestions.sort(() => Math.random() - 0.5);
+  const wrongItems = quizData.filter(q => wrongList.includes(q.no));
+  wrongItems.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'flashcard';
+    card.onclick = () => card.classList.toggle('flipped');
+    card.innerHTML = `
+      <div class="card-content card-front">
+        <div class="word-title">No.${item.no} : ${item.word}</div>
+        <div class="hint-text">👆 タップして意味・例文を見る</div>
+      </div>
+      <div class="card-content card-back">
+        <div class="jp-meaning">${item.word} - ${item.jp}</div>
+        <div class="sentence">${item.sentence}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function startTest() {
+  const count = parseInt(document.getElementById('question-count').value);
+  currentQuestions = [...quizData].sort(() => Math.random() - 0.5).slice(0, count);
   currentIndex = 0;
   score = 0;
 
-  document.getElementById('setup-screen').classList.add('hidden');
-  document.getElementById('result-screen').classList.add('hidden');
-  document.getElementById('quiz-screen').classList.remove('hidden');
-  
-  // テスト中はナビゲーションタブを隠す（途中でやめるボタンがあるため）
-  document.getElementById('nav-tabs').classList.add('hidden');
-
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-quiz').classList.add('active');
   showQuestion();
-}
-
-function startWrongTest() {
-  switchTab('test');
-  startTest(true);
-}
-
-function abortQuiz() {
-  document.getElementById('quiz-screen').classList.add('hidden');
-  document.getElementById('result-screen').classList.add('hidden');
-  document.getElementById('setup-screen').classList.remove('hidden');
-  document.getElementById('nav-tabs').classList.remove('hidden');
 }
 
 function showQuestion() {
@@ -478,70 +608,12 @@ function nextQuestion() {
 }
 
 function showResult() {
-  document.getElementById('quiz-screen').classList.add('hidden');
-  document.getElementById('result-screen').classList.remove('hidden');
-  document.getElementById('nav-tabs').classList.remove('hidden');
-
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-result').classList.add('active');
   document.getElementById('final-score').innerText = `${currentQuestions.length}問中 ${score}問 正解！`;
-
-  const reviewBtn = document.getElementById('review-quiz-btn');
-  reviewBtn.style.display = wrongList.length > 0 ? 'block' : 'none';
 }
 
-/* 間違えた英単語リストの表示更新 */
-function updateWrongListView() {
-  document.getElementById('wrong-count').innerText = wrongList.length;
-  const container = document.getElementById('wrong-list-container');
-  const btn = document.getElementById('start-wrong-tab-btn');
-  container.innerHTML = '';
-
-  if (wrongList.length === 0) {
-    container.innerHTML = '<p style="color:#22c55e; text-align:center; padding:20px;">現在間違えた問題はありません！素晴らしい！</p>';
-    if (btn) btn.style.display = 'none';
-    return;
-  }
-
-  if (btn) btn.style.display = 'block';
-
-  const wrongItems = quizData.filter(q => wrongList.includes(q.no));
-  wrongItems.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'review-item';
-    div.innerHTML = `
-      <div>
-        <strong>No.${item.no}</strong><br>
-        <small style="color:#6b7280">${item.sentence}</small><br>
-        <span>${item.jp}</span>
-      </div>
-      <div style="font-weight: bold; color: var(--primary); font-size: 1.1rem; background: #e0e7ff; padding: 4px 10px; border-radius: 6px;">
-        ${item.word}
-      </div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-/* 勉強用単語帳の生成（クイズレット風） */
-function renderStudyList() {
-  const container = document.getElementById('study-list-container');
-  if (container.children.length > 0) return; // 一度生成したら再描画しない
-
-  quizData.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'study-card';
-    card.innerHTML = `
-      <div class="study-header">
-        <span>No. ${item.no}</span>
-      </div>
-      <div class="study-word"><strong>${item.word}</strong> : ${item.jp}</div>
-      <div class="study-sentence">例文: ${item.sentence}</div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// 初期化時に間違えた単語リストのカウントを同期
-updateWrongListView();
+renderStudyGrid();
 </script>
 
 </body>
