@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ターゲット1200 (1051-1100) 学習アプリ</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      text-align: center;
+      margin-top: 0;
+      color: #374151;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .blank-box {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      padding: 20px;
+      background: #f9fafb;
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 80px;
+      padding: 2px 8px;
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary);
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .jp-text {
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin-top: 10px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    button.opt-btn {
+      padding: 12px;
+      font-size: 1rem;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button.opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f8fafc;
+    }
+
+    button.correct-flash {
+      background-color: #dcfce7 !important;
+      border-color: var(--correct) !important;
+      color: #15803d !important;
+      font-weight: bold;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+    }
+
+    button.wrong-flash {
+      background-color: #fee2e2 !important;
+      border-color: var(--wrong) !important;
+      color: #b91c1c !important;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .review-list {
+      margin-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 15px;
+    }
+
+    .review-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>ターゲット1200 (No.1051〜1100) テスト</h1>
+  
+  <div id="quiz-screen">
+    <div class="status-bar">
+      <span id="progress">問題 1 / 50</span>
+      <span id="score">正解数: 0</span>
+    </div>
+
+    <div class="blank-box">
+      <div id="en-sentence">Loading...</div>
+      <div id="jp-translation" class="jp-text"></div>
+    </div>
+
+    <div id="options-container" class="options"></div>
+
+    <button id="next-btn" class="action-btn hidden" onclick="nextQuestion()">次の問題へ</button>
+  </div>
+
+  <div id="result-screen" class="hidden">
+    <h2>テスト終了！</h2>
+    <p id="final-score" style="font-size: 1.2rem; font-weight: bold;"></p>
+    
+    <button class="action-btn" onclick="startQuiz(false)" style="margin-bottom: 10px;">もう一度全問解く</button>
+    <button id="review-quiz-btn" class="action-btn" style="background:#ea580c;" onclick="startQuiz(true)">間違えた問題だけ解く</button>
+
+    <div class="review-list">
+      <h3>復習用ミスリスト (<span id="wrong-count">0</span>件)</h3>
+      <div id="wrong-list-container"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  { no: 1051, word: "create", sentence: "God ( ___ ) the world.", jp: "神は世界を創造した。" },
+  { no: 1052, word: "increase", sentence: "The population has ( ___ ).", jp: "人口が増加した。" },
+  { no: 1053, word: "improve", sentence: "I want to ( ___ ) my English.", jp: "私は英語力を向上させたい。" },
+  { no: 1054, word: "mean", sentence: "What does this word ( ___ )?", jp: "この単語はどういう意味ですか？" },
+  { no: 1055, word: "own", sentence: "He ( ___ ) a large house.", jp: "彼は大きな家を所有している。" },
+  { no: 1056, word: "include", sentence: "The price ( ___ ) tax.", jp: "価格には税が含まれている。" },
+  { no: 1057, word: "consider", sentence: "We should ( ___ ) this plan.", jp: "私たちはこの計画を熟考すべきだ。" },
+  { no: 1058, word: "allow", sentence: "My parents ( ___ ) me to study abroad.", jp: "両親は私が留学するのを許してくれた。" },
+  { no: 1059, word: "lead", sentence: "All roads ( ___ ) to Rome.", jp: "すべての道はローマに通じる。" },
+  { no: 1060, word: "produce", sentence: "The factory ( ___ ) cars.", jp: "その工場は車を生産している。" },
+  { no: 1061, word: "provide", sentence: "They ( ___ ) us with food.", jp: "彼らは私たちに食べ物を提供する。" },
+  { no: 1062, word: "continue", sentence: "The rain will ( ___ ) all day.", jp: "一日中雨が続くだろう。" },
+  { no: 1063, word: "offer", sentence: "He ( ___ ) to help me.", jp: "彼は私を手助けすると申し出た。" },
+  { no: 1064, word: "require", sentence: "This job ( ___ ) experience.", jp: "この仕事は経験を必要とする。" },
+  { no: 1065, word: "suggest", sentence: "She ( ___ ) a new idea.", jp: "彼女は新しいアイデアを提案した。" },
+  { no: 1066, word: "reduce", sentence: "We need to ( ___ ) waste.", jp: "私たちはゴミを減らす必要がある。" },
+  { no: 1067, word: "readily", sentence: "He ( ___ ) accepted the job.", jp: "彼は快くその仕事を引き受けた。" },
+  { no: 1068, word: "fairly", sentence: "The test was ( ___ ) easy.", jp: "そのテストはかなり簡単だった。" },
+  { no: 1069, word: "extremely", sentence: "It is ( ___ ) cold today.", jp: "今日は極めて寒い。" },
+  { no: 1070, word: "completely", sentence: "I ( ___ ) forgot about it.", jp: "私はそれを完全に忘れていた。" },
+  { no: 1071, word: "especially", sentence: "I like fruit, ( ___ ) apples.", jp: "私は果物、特にリンゴが好きだ。" },
+  { no: 1072, word: "slightly", sentence: "The price is ( ___ ) higher.", jp: "価格はわずかに高い。" },
+  { no: 1073, word: "mostly", sentence: "The students are ( ___ ) Japanese.", jp: "生徒は主に日本人だ。" },
+  { no: 1074, word: "nearly", sentence: "It is ( ___ ) midnight.", jp: "もうすぐ子時（真夜中）だ。" },
+  { no: 1075, word: "largely", sentence: "The success was ( ___ ) due to luck.", jp: "成功は主に運によるものだった。" },
+  { no: 1076, word: "rarely", sentence: "He ( ___ ) goes out at night.", jp: "彼はめったに夜外出しない。" },
+  { no: 1077, word: "fair", sentence: "That's not a ( ___ ) decision.", jp: "それは公平な決定ではない。" },
+  { no: 1078, word: "likely", sentence: "It is ( ___ ) to rain tomorrow.", jp: "明日雨が降りそうだ。" },
+  { no: 1079, word: "aware", sentence: "Are you ( ___ ) of the rule?", jp: "そのルールに気づいていますか？" },
+  { no: 1080, word: "certain", sentence: "I am ( ___ ) of his success.", jp: "私は彼の成功を確信している。" },
+  { no: 1081, word: "similar", sentence: "The two pictures are ( ___ ).", jp: "その2枚の絵は似ている。" },
+  { no: 1082, word: "sweet", sentence: "This cake is very ( ___ ).", jp: "このケーキはとても甘い。" },
+  { no: 1083, word: "dry", sentence: "Keep your skin ( ___ ).", jp: "肌を乾いた状態に保ちなさい。" },
+  { no: 1084, word: "expensive", sentence: "This watch is too ( ___ ).", jp: "この時計は高価すぎる。" },
+  { no: 1085, word: "cheap", sentence: "I bought a ( ___ ) ticket.", jp: "安価なチケットを買った。" },
+  { no: 1086, word: "huge", sentence: "There is a ( ___ ) crowd.", jp: "巨大な群衆がいる。" },
+  { no: 1087, word: "tiny", sentence: "An ant is a ( ___ ) insect.", jp: "アリはごく小さい昆虫だ。" },
+  { no: 1088, word: "single", sentence: "He is a ( ___ ) father.", jp: "彼は独身の父親だ。" },
+  { no: 1089, word: "double", sentence: "I'd like a ( ___ ) room.", jp: "2人用の部屋をお願いします。" },
+  { no: 1090, word: "heavy", sentence: "This box is very ( ___ ).", jp: "この箱はとても重い。" },
+  { no: 1091, word: "light", sentence: "Feathers are very ( ___ ).", jp: "羽毛はとても軽い。" },
+  { no: 1092, word: "broad", sentence: "He has ( ___ ) shoulders.", jp: "彼は広い肩幅をしている。" },
+  { no: 1093, word: "narrow", sentence: "The street is very ( ___ ).", jp: "その通りはとても狭い。" },
+  { no: 1094, word: "deep", sentence: "The river is ( ___ ) here.", jp: "川はここが深い。" },
+  { no: 1095, word: "shallow", sentence: "Children play in the ( ___ ) pool.", jp: "子供たちは浅いプールで遊ぶ。" },
+  { no: 1096, word: "absent", sentence: "She was ( ___ ) from school.", jp: "彼女は学校を欠席していた。" },
+  { no: 1097, word: "present", sentence: "All members were ( ___ ).", jp: "全メンバーが出席していた。" },
+  { no: 1098, word: "polite", sentence: "He is always ( ___ ) to everyone.", jp: "彼は誰にでも常に礼儀正しい。" },
+  { no: 1099, word: "rude", sentence: "It is ( ___ ) to point at people.", jp: "人を指差すのは無礼だ。" },
+  { no: 1100, word: "silent", sentence: "The library was completely ( ___ ).", jp: "図書館は完全に静かだった。" }
+];
+
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let wrongList = JSON.parse(localStorage.getItem('target1200_wrong_1051_1100')) || [];
+
+function saveWrongList() {
+  localStorage.setItem('target1200_wrong_1051_1100', JSON.stringify(wrongList));
+}
+
+function startQuiz(onlyWrong = false) {
+  if (onlyWrong) {
+    if (wrongList.length === 0) {
+      alert("間違えた問題はありません！");
+      return;
+    }
+    currentQuestions = quizData.filter(q => wrongList.includes(q.no));
+  } else {
+    currentQuestions = [...quizData];
+  }
+
+  currentQuestions.sort(() => Math.random() - 0.5);
+  currentIndex = 0;
+  score = 0;
+
+  document.getElementById('quiz-screen').classList.remove('hidden');
+  document.getElementById('result-screen').classList.add('hidden');
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = currentQuestions[currentIndex];
+  document.getElementById('progress').innerText = `問題 ${currentIndex + 1} / ${currentQuestions.length}`;
+  document.getElementById('score').innerText = `正解数: ${score}`;
+  document.getElementById('next-btn').classList.add('hidden');
+
+  document.getElementById('en-sentence').innerHTML = q.sentence.replace('( ___ )', '<span class="blank">?</span>');
+  document.getElementById('jp-translation').innerText = q.jp;
+
+  const optionsContainer = document.getElementById('options-container');
+  optionsContainer.innerHTML = '';
+
+  const otherWords = quizData.filter(item => item.word !== q.word);
+  otherWords.sort(() => Math.random() - 0.5);
+  const wrongOptions = otherWords.slice(0, 3).map(item => item.word);
+  
+  const choices = [q.word, ...wrongOptions].sort(() => Math.random() - 0.5);
+
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerText = choice;
+    btn.onclick = () => selectAnswer(btn, choice, q);
+    optionsContainer.appendChild(btn);
+  });
+}
+
+function selectAnswer(selectedBtn, choice, q) {
+  const buttons = document.querySelectorAll('.opt-btn');
+  buttons.forEach(btn => btn.disabled = true);
+
+  if (choice === q.word) {
+    selectedBtn.classList.add('correct-flash');
+    score++;
+    wrongList = wrongList.filter(no => no !== q.no);
+    saveWrongList();
+    setTimeout(nextQuestion, 800);
+  } else {
+    selectedBtn.classList.add('wrong-flash');
+    buttons.forEach(btn => {
+      if (btn.innerText === q.word) {
+        btn.classList.add('correct-flash');
+      }
+    });
+
+    if (!wrongList.includes(q.no)) {
+      wrongList.push(q.no);
+      saveWrongList();
+    }
+    document.getElementById('next-btn').classList.remove('hidden');
+  }
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex < currentQuestions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.remove('hidden');
+
+  document.getElementById('final-score').innerText = `${currentQuestions.length}問中 ${score}問 正解！`;
+
+  const reviewBtn = document.getElementById('review-quiz-btn');
+  reviewBtn.style.display = wrongList.length > 0 ? 'block' : 'none';
+
+  renderWrongList();
+}
+
+function renderWrongList() {
+  document.getElementById('wrong-count').innerText = wrongList.length;
+  const container = document.getElementById('wrong-list-container');
+  container.innerHTML = '';
+
+  if (wrongList.length === 0) {
+    container.innerHTML = '<p style="color:#22c55e;">現在復習する問題はありません！全問正解です！</p>';
+    return;
+  }
+
+  const wrongItems = quizData.filter(q => wrongList.includes(q.no));
+  wrongItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `<strong>No.${item.no} ${item.word}</strong> - ${item.jp}<br><small style="color:#6b7280">${item.sentence}</small>`;
+    container.appendChild(div);
+  });
+}
+
+startQuiz();
+</script>
+
+</body>
+</html>
