@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英単語学習アプリ</title>
+    <title>英単語学習Webアプリ</title>
     <style>
         :root {
             --primary-color: #4a90e2;
-            --bg-color: #f8f9fa;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
             --text-color: #333333;
+            --correct-color: #28a745;
+            --wrong-color: #dc3545;
         }
 
         body {
@@ -17,30 +19,112 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
 
+        /* ヘッダーとハンバーガーメニュー */
         header {
-            margin-bottom: 20px;
-            text-align: center;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
         }
 
-        h1 {
-            margin: 0 0 10px 0;
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        /* サイドバーナビゲーション */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 250px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding-top: 60px;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar li a:hover {
+            background-color: #f0f4f8;
             color: var(--primary-color);
         }
 
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            z-index: 999;
         }
 
-        button {
+        .overlay.active {
+            display: block;
+        }
+
+        /* メインコンテンツエリア */
+        main {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* ボタン共通スタイル */
+        .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -49,60 +133,94 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
-        button:hover {
+        .btn:hover {
             opacity: 0.9;
         }
 
-        button.secondary {
+        .btn-secondary {
             background-color: #6c757d;
         }
 
-        .container {
+        /* 3D フリップカード (勉強用 & 間違えた問題) */
+        .card-container {
+            perspective: 1000px;
             width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 24px;
-            box-sizing: border-box;
+            height: 260px;
+            margin-bottom: 20px;
+            cursor: pointer;
         }
 
-        /* 単語カードスタイル */
-        .card {
-            min-height: 200px;
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: var(--card-bg);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border: 2px dashed #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 20px;
             padding: 20px;
-            text-align: center;
-            position: relative;
+            box-sizing: border-box;
         }
 
-        .word {
+        .card-front {
+            border: 2px dashed #e0e0e0;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            border: 2px solid var(--primary-color);
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .card-word {
             font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
+            color: var(--primary-color);
         }
 
-        .meaning {
-            font-size: 20px;
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .hint {
+        .card-hint {
             font-size: 12px;
             color: #aaa;
-            position: absolute;
-            bottom: 10px;
+            margin-top: 15px;
+        }
+
+        .card-back .meaning {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--correct-color);
+            margin-bottom: 15px;
+        }
+
+        .card-back .sentence {
+            font-size: 15px;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .card-back .sentence-meaning {
+            font-size: 13px;
+            color: #666;
         }
 
         .controls {
@@ -111,189 +229,521 @@
             align-items: center;
         }
 
-        /* 一覧表示用スタイル */
-        .word-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        /* テスト設定・実行画面 */
+        .setting-group {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
-        .word-item {
+        .setting-item {
+            margin-bottom: 20px;
+        }
+
+        .setting-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .radio-group {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .word-item:last-child {
-            border-bottom: none;
+        .radio-group label {
+            font-weight: normal;
+            background: #eee;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
         }
 
-        .hidden {
-            display: none !important;
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group input[type="radio"]:checked + span {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .question-trans {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-word {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .option-meaning {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+            display: none; /* 回答後に表示 */
+        }
+
+        /* 正解・不正解の光る枠エフェクト */
+        .option-card.correct-glow {
+            border-color: var(--correct-color) !important;
+            box-shadow: 0 0 12px rgba(40, 167, 69, 0.8) !important;
+            background-color: #eafaf1;
+        }
+
+        .option-card.wrong-glow {
+            border-color: var(--wrong-color) !important;
+            box-shadow: 0 0 12px rgba(220, 53, 69, 0.8) !important;
+            background-color: #fdf2f2;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+            background: white;
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>英単語学習</h1>
-        <div class="nav-buttons">
-            <button onclick="switchMode('card')">カード学習</button>
-            <button onclick="switchMode('list')" class="secondary">単語一覧</button>
-        </div>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <h1 id="page-title">勉強用 (単語カード)</h1>
     </header>
 
-    <!-- 単語カードモード -->
-    <div id="card-mode" class="container">
-        <div class="card" onclick="flipCard()">
-            <div id="card-word" class="word">Word</div>
-            <div id="card-meaning" class="meaning hidden">意味</div>
-            <div class="hint">タップして意味を表示 / 発音</div>
-        </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-        <div class="controls">
-            <button onclick="prevWord()" class="secondary">前へ</button>
-            <span id="progress">1 / 1</span>
-            <button onclick="speakWord()" class="secondary">🔊 音声</button>
-            <button onclick="nextWord()">次へ</button>
-        </div>
-    </div>
-
-    <!-- 単語一覧モード -->
-    <div id="list-mode" class="container hidden">
-        <ul id="vocabulary-list-ul" class="word-list">
-            <!-- JSで動的に追加されます -->
+    <!-- サイドバーナビゲーション -->
+    <nav class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#" onclick="switchPage('study')">📖 勉強用</a></li>
+            <li><a href="#" onclick="switchPage('test')">📝 テスト</a></li>
+            <li><a href="#" onclick="switchPage('wrong')">❌ 間違えた問題</a></li>
         </ul>
-    </div>
+    </nav>
+
+    <main>
+        <!-- 1. 勉強用ページ -->
+        <div id="page-study" class="page active">
+            <div class="card-container" onclick="flipCard('study-card')">
+                <div class="card-inner" id="study-card">
+                    <div class="card-front">
+                        <div class="card-word" id="study-word">Word</div>
+                        <div class="card-hint">タップして裏返す</div>
+                    </div>
+                    <div class="card-back">
+                        <div class="meaning" id="study-meaning">日本語訳</div>
+                        <div class="sentence" id="study-sentence">例文</div>
+                        <div class="sentence-meaning" id="study-sentence-meaning">例文訳</div>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="prevStudyWord()">前へ</button>
+                <span id="study-progress">1 / 50</span>
+                <button class="btn" onclick="nextStudyWord()">次へ</button>
+            </div>
+        </div>
+
+        <!-- 2. テストページ -->
+        <div id="page-test" class="page">
+            <!-- テスト設定画面 -->
+            <div id="test-setup" class="setting-group">
+                <h3>テスト設定</h3>
+                <div class="setting-item">
+                    <label>問題数:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="q-count" value="10" checked><span>10問</span></label>
+                        <label><input type="radio" name="q-count" value="15"><span>15問</span></label>
+                        <label><input type="radio" name="q-count" value="20"><span>20問</span></label>
+                        <label><input type="radio" name="q-count" value="50"><span>50問</span></label>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>英文下の日本語訳:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="show-trans" value="yes" checked><span>載せる</span></label>
+                        <label><input type="radio" name="show-trans" value="no"><span>載せない</span></label>
+                    </div>
+                </div>
+                <button class="btn" style="width: 100%;" onclick="startTest()">テスト開始</button>
+            </div>
+
+            <!-- テスト実行画面 -->
+            <div id="test-play" class="test-box" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; color: #666;">
+                    <span id="test-progress">第 1 問</span>
+                    <span id="test-score">正解: 0</span>
+                </div>
+                
+                <div class="question-text" id="quiz-question"></div>
+                <div class="question-trans" id="quiz-trans"></div>
+
+                <div class="options-grid" id="quiz-options"></div>
+
+                <button id="next-quiz-btn" class="btn" style="width: 100%; display: none;" onclick="nextQuestion()">次の問題へ</button>
+            </div>
+
+            <!-- テスト結果画面 -->
+            <div id="test-result" class="setting-group" style="display: none; text-align: center;">
+                <h3>テスト終了！</h3>
+                <p id="result-score-text" style="font-size: 20px; font-weight: bold; margin: 20px 0;"></p>
+                <button class="btn" onclick="resetTestSetup()">もう一度テストする</button>
+            </div>
+        </div>
+
+        <!-- 3. 間違えた問題ページ -->
+        <div id="page-wrong" class="page">
+            <div id="wrong-card-view">
+                <div class="card-container" onclick="flipCard('wrong-card')">
+                    <div class="card-inner" id="wrong-card">
+                        <div class="card-front">
+                            <div class="card-word" id="wrong-word">Word</div>
+                            <div class="card-hint">タップして裏返す</div>
+                        </div>
+                        <div class="card-back">
+                            <div class="meaning" id="wrong-meaning">日本語訳</div>
+                            <div class="sentence" id="wrong-sentence">例文</div>
+                            <div class="sentence-meaning" id="wrong-sentence-meaning">例文訳</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="prevWrongWord()">前へ</button>
+                    <span id="wrong-progress">1 / 1</span>
+                    <button class="btn" onclick="nextWrongWord()">次へ</button>
+                </div>
+            </div>
+            <div id="wrong-empty" class="empty-msg" style="display: none;">
+                間違えた問題はありません！<br>テストに挑戦してみましょう。
+            </div>
+        </div>
+    </main>
 
     <script>
-        // 画像内の単語（全51件）
+        // 画像内50単語データセット
         const vocabularyList = [
-            { word: "vote", meaning: "投票をする、を投票で決める" },
-            { word: "president", meaning: "大統領、社長、会長" },
-            { word: "liberty", meaning: "自由" },
-            { word: "fight", meaning: "（と）戦う、（と）けんかをする" },
-            { word: "war", meaning: "戦争（状態）、争い、戦い" },
-            { word: "military", meaning: "軍（隊）の、軍用の" },
-            { word: "army", meaning: "（地上）軍隊、陸軍" },
-            { word: "soldier", meaning: "兵士、（陸軍の）軍人" },
-            { word: "weapon", meaning: "武器、兵器" },
-            { word: "bomb", meaning: "爆弾" },
-            { word: "break out", meaning: "（惨事などが）突然起こる、勃発する" },
-            { word: "come across ~", meaning: "〜に（偶然）出会う、〜を見つける" },
-            { word: "come out", meaning: "（本などが）発売される、（太陽・月などが）現れる" },
-            { word: "come up with ~", meaning: "〜を思いつく" },
-            { word: "count on [upon] ~", meaning: "〜に頼る、〜を当てにする" },
-            { word: "cut down [back] on ~", meaning: "〜（の数量など）を減らす" },
-            { word: "die out", meaning: "（消えて）なくなる、絶滅する" },
-            { word: "drop in (on ~)", meaning: "〜（人）をちょっと訪れる" },
-            { word: "feel free to do", meaning: "自由［遠慮なく］〜する" },
-            { word: "get along (with ~)", meaning: "〜（人）と仲良くやっている、うまくやっていく" },
-            { word: "get out of ~", meaning: "〜（やるべきこと）から逃れる、（習慣など）をやめる" },
-            { word: "get over ~", meaning: "〜から回復する、立ち直る、〜を克服する" },
-            { word: "get through ~", meaning: "〜（困難など）を切り抜ける、〜を終える" },
-            { word: "give way (to ~)", meaning: "（〜に）譲歩する、屈する、〜に代わられる" },
-            { word: "go along with ~", meaning: "〜に賛成する、を支持する" },
-            { word: "head for ~", meaning: "〜（場所・悪い状況）に向かう" },
-            { word: "keep [bear] ~ in mind", meaning: "〜を心に留めておく" },
-            { word: "keep [stay] in touch (with ~)", meaning: "（〜と）連絡を取り続ける" },
-            { word: "learn (how) to do", meaning: "…できるようになる、…の仕方を習う［覚える］" },
-            { word: "look back (on ~)", meaning: "（〜を）回想する、振り返る" },
-            { word: "look into ~", meaning: "〜を調査する、〜をのぞき込む" },
-            { word: "look over ~", meaning: "〜をざっと調べる、〜に目を通す" },
-            { word: "look up to ~", meaning: "〜を尊敬する" },
-            { word: "make a difference (to ~)", meaning: "（〜にとって）影響がある、重要である" },
-            { word: "make [earn] a [one's] living", meaning: "生計を立てる" },
-            { word: "make up (~)", meaning: "〜を構成する、〜をでっち上げる" },
-            { word: "pass away", meaning: "亡くなる、滅びる" },
-            { word: "point out ~", meaning: "〜を指摘する、〜を指し示す" },
-            { word: "put off ~", meaning: "〜を延期する、先延ばしにする" },
-            { word: "put together ~", meaning: "〜を組み立てる、まとめる" },
-            { word: "put up with ~", meaning: "〜を我慢する" },
-            { word: "run after ~", meaning: "〜を追いかける" },
-            { word: "run away (from ~)", meaning: "（〜から）逃げる" },
-            { word: "run out of ~", meaning: "〜を使い果たす" },
-            { word: "stand for ~", meaning: "〜を意味する、〜の略称である、〜を支持する" },
-            { word: "stand out", meaning: "ずば抜けている、目立つ" },
-            { word: "take A for B", meaning: "AをBと思う［思い込む］" },
-            { word: "take place", meaning: "（事が）起こる、行われる" },
-            { word: "take up ~", meaning: "（趣味として）〜を始める、〜に就く、〜を取り上げる" },
-            { word: "work on ~", meaning: "〜に取り組む、〜に働きかける" },
-            { word: "all at once", meaning: "（予期せずに）突然、いっせいに" }
+            { word: "vote", meaning: "投票をする、を投票で決める", sentence: "I voted for her in the election.", sentenceMeaning: "私は選挙で彼女に投票した。" },
+            { word: "president", meaning: "大統領、社長、会長", sentence: "The new president was elected after a close race.", sentenceMeaning: "接戦の末、新大統領が選出された。" },
+            { word: "liberty", meaning: "自由", sentence: "They're worried about losing their civil liberties.", sentenceMeaning: "彼らは市民の自由を失うことを心配している。" },
+            { word: "fight", meaning: "（と）戦う、（と）けんかをする", sentence: "They were fighting the enemy for their country.", sentenceMeaning: "彼らは祖国のために敵と戦っていた。" },
+            { word: "war", meaning: "戦争（状態）、争い、戦い", sentence: "The two countries were at war then.", sentenceMeaning: "両国は当時戦争状態にあった。" },
+            { word: "military", meaning: "軍（隊）の、軍用の", sentence: "The government was planning to take military action.", sentenceMeaning: "政府は軍事行動をとろうと計画していた。" },
+            { word: "army", meaning: "（地上）軍隊、陸軍", sentence: "Some countries have no army.", sentenceMeaning: "軍隊を持たない国もある。" },
+            { word: "soldier", meaning: "兵士、（陸軍の）軍人", sentence: "The soldiers marched all night in the rain.", sentenceMeaning: "兵士たちは大雨の中を終夜行進した。" },
+            { word: "weapon", meaning: "武器、兵器", sentence: "The use of chemical weapons is against international law.", sentenceMeaning: "化学兵器の使用は国際法に抵触する。" },
+            { word: "bomb", meaning: "爆弾", sentence: "Japan is the only country where atomic bombs were dropped.", sentenceMeaning: "日本は原子爆弾が落とされた唯一の国だ。" },
+            { word: "break out", meaning: "（惨事などが）突然起こる、勃発する", sentence: "A fire broke out near here last night.", sentenceMeaning: "昨晩この近くで火事が起こった。" },
+            { word: "come across", meaning: "〜に（偶然）出会う、〜を見つける", sentence: "I came across my cousin in the mall.", sentenceMeaning: "私はショッピングモールでいとこに出くわした。" },
+            { word: "come out", meaning: "（本などが）発売される、（太陽・月などが）現れる", sentence: "Her new novel is coming out soon.", sentenceMeaning: "彼女の新しい小説がまもなく発売される。" },
+            { word: "come up with", meaning: "〜を思いつく", sentence: "How did you come up with the great idea?", sentenceMeaning: "どうやってその素晴らしいアイデアを思いついたの？" },
+            { word: "count on", meaning: "〜に頼る、〜を当てにする", sentence: "You can count on me anytime.", sentenceMeaning: "いつでも私を当てにしていいからね。" },
+            { word: "cut down on", meaning: "〜（の数量など）を減らす", sentence: "I need to cut down on the salt.", sentenceMeaning: "私は塩分を減らす必要がある。" },
+            { word: "die out", meaning: "（消えて）なくなる、絶滅する", sentence: "The old traditions are dying out in the city.", sentenceMeaning: "その街では古い伝統が消えつつある。" },
+            { word: "drop in", meaning: "〜（人）をちょっと訪れる", sentence: "I'll drop in on you when I have time.", sentenceMeaning: "時間のあるときにあなたをちょっと訪ねますね。" },
+            { word: "feel free to", meaning: "自由［遠慮なく］〜する", sentence: "Please feel free to ask me about it.", sentenceMeaning: "そのことについて私に自由［遠慮なく］聞いてください。" },
+            { word: "get along with", meaning: "〜（人）と仲良くやっている、うまくやっていく", sentence: "How are you getting along with him?", sentenceMeaning: "彼とは仲良くやっていますか。" },
+            { word: "get out of", meaning: "〜（やるべきこと）から逃れる、（習慣など）をやめる", sentence: "I really wanted to get out of today's meeting.", sentenceMeaning: "私は本当に今日の会議に出ずに済ませたかった。" },
+            { word: "get over", meaning: "〜から回復する、立ち直る、〜を克服する", sentence: "He's completely gotten over the disease.", sentenceMeaning: "彼はすっかり病気から回復した。" },
+            { word: "get through", meaning: "〜（困難など）を切り抜ける、〜を終える", sentence: "This is how I got through the hot summer.", sentenceMeaning: "こうして私は暑い夏を切り抜けたんだ。" },
+            { word: "give way to", meaning: "（〜に）譲歩する、屈する、〜に代わられる", sentence: "I didn't give way to her on this point.", sentenceMeaning: "私はこの点では彼女に譲歩しなかった。" },
+            { word: "go along with", meaning: "〜に賛成する、を支持する", sentence: "She went along with me.", sentenceMeaning: "彼女は私に賛同してくれた。" },
+            { word: "head for", meaning: "〜（場所・悪い状況）に向かう", sentence: "The plane was heading for New York.", sentenceMeaning: "飛行機はニューヨークに向かっていた。" },
+            { word: "keep in mind", meaning: "〜を心に留めておく", sentence: "I'll keep your advice in mind.", sentenceMeaning: "君のアドバイスを覚えておきますね。" },
+            { word: "keep in touch with", meaning: "（〜と）連絡を取り続ける", sentence: "Do you still keep in touch with him?", sentenceMeaning: "まだ彼とは連絡を取り合っているのかな？" },
+            { word: "learn how to", meaning: "…できるようになる、…の仕方を習う［覚える］", sentence: "How did you learn to cook so many recipes?", sentenceMeaning: "どうやってそんなにたくさんのレシピを料理できるようになっていたのですか。" },
+            { word: "look back on", meaning: "（〜を）回想する、振り返る", sentence: "Someday I'll look back on this day and laugh.", sentenceMeaning: "いつかこの日を振り返って笑うことでしょう。" },
+            { word: "look into", meaning: "〜を調査する、〜をのぞき込む", sentence: "They're looking into the problem.", sentenceMeaning: "彼らはその問題を調査しているところだ。" },
+            { word: "look over", meaning: "〜をざっと調べる、〜に目を通す", sentence: "Would you look over my essay for me?", sentenceMeaning: "私のレポートをざっと見ていただけませんか。" },
+            { word: "look up to", meaning: "〜を尊敬する", sentence: "I always look up to her for her courage.", sentenceMeaning: "私はいつも彼女の勇敢さを尊敬している。" },
+            { word: "make a difference", meaning: "（〜にとって）影響がある、重要である", sentence: "He made a big difference to my life.", sentenceMeaning: "彼は私の人生に大きな影響を与えた。" },
+            { word: "make a living", meaning: "生計を立てる", sentence: "She couldn't make a living as an actor.", sentenceMeaning: "彼女は俳優として生計を立てられなかった。" },
+            { word: "make up", meaning: "〜を構成する、〜をでっち上げる", sentence: "The committee is made up of ten experts.", sentenceMeaning: "その委員会は10人の専門家で構成されている。" },
+            { word: "pass away", meaning: "亡くなる、滅びる", sentence: "His father passed away last year.", sentenceMeaning: "彼の父は昨年亡くなった。" },
+            { word: "point out", meaning: "〜を指摘する、〜を指し示す", sentence: "She kindly pointed out some errors to me.", sentenceMeaning: "彼女は親切にも私にいくつかの誤りを指摘してくれた。" },
+            { word: "put off", meaning: "〜を延期する、先延ばしにする", sentence: "The event has been put off until next Sunday.", sentenceMeaning: "イベントは来週の日曜まで延期された。" },
+            { word: "put together", meaning: "〜を組み立てる、まとめる", sentence: "I put this shelf together in about 30 minutes.", sentenceMeaning: "私は30分ほどでこの棚を組み立てた。" },
+            { word: "put up with", meaning: "〜を我慢する", sentence: "You don't have to put up with it.", sentenceMeaning: "それを我慢する必要はないよ。" },
+            { word: "run after", meaning: "〜を追いかける", sentence: "I ran after the thief, but he disappeared.", sentenceMeaning: "私は泥棒を追いかけたが、彼は姿を消してしまった。" },
+            { word: "run away from", meaning: "（〜から）逃げる", sentence: "He won't run away from the problem.", sentenceMeaning: "彼はその問題から逃げたりしない。" },
+            { word: "run out of", meaning: "〜を使い果たす", sentence: "We're running out of ideas.", sentenceMeaning: "私たちはもうアイデアが出ないようですね。" },
+            { word: "stand for", meaning: "〜を意味する、〜の略称である", sentence: "What does DIY stand for?", sentenceMeaning: "DIYは何を表していますか。" },
+            { word: "stand out", meaning: "ずば抜けている、目立つ", sentence: "She always stands out as a key player.", sentenceMeaning: "彼女は中心的存在として常に際立っている。" },
+            { word: "take A for B", meaning: "AをBと思う［思い込む］", sentence: "I took him for your brother.", sentenceMeaning: "私は彼のことをあなたのお兄さんだと思い込んでいた。" },
+            { word: "take place", meaning: "（事が）起こる、行われる", sentence: "The fireworks display takes place Saturday evening.", sentenceMeaning: "その花火大会は次の土曜の夜に行われる。" },
+            { word: "take up", meaning: "（趣味として）〜を始める、〜に就く", sentence: "She took up boxing when she was 15.", sentenceMeaning: "彼女は15歳の時にボクシングを始めた。" },
+            { word: "work on", meaning: "〜に取り組む、〜に働きかける", sentence: "I'm working on my presentation for tomorrow.", sentenceMeaning: "私は明日プレゼンの準備に取り組んでいるところだ。" }
         ];
 
-        let currentIndex = 0;
-        let isFlipped = false;
+        // 状態変数
+        let studyIndex = 0;
+        let wrongIndex = 0;
+        let wrongList = [];
 
-        function init() {
-            showCurrentCard();
-            renderList();
+        // テスト関連変数
+        let testQuestions = [];
+        let currentTestIdx = 0;
+        let testScore = 0;
+        let showTranslationOption = true;
+
+        // ページ切替 & ナビゲーション
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
         }
 
-        function showCurrentCard() {
-            const current = vocabularyList[currentIndex];
-            document.getElementById('card-word').textContent = current.word;
-            document.getElementById('card-meaning').textContent = current.meaning;
+        function switchPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            toggleMenu();
+
+            const titles = {
+                'study': '📖 勉強用 (単語カード)',
+                'test': '📝 テスト',
+                'wrong': '❌ 間違えた問題'
+            };
+            document.getElementById('page-title').textContent = titles[pageName];
+            document.getElementById(`page-${pageName}`).classList.add('active');
+
+            if (pageName === 'study') updateStudyCard();
+            if (pageName === 'wrong') updateWrongView();
+        }
+
+        function flipCard(cardId) {
+            document.getElementById(cardId).parentElement.classList.toggle('flipped');
+        }
+
+        /* --- 1. 勉強用機能 --- */
+        function updateStudyCard() {
+            const current = vocabularyList[studyIndex];
+            document.getElementById('study-card').parentElement.classList.remove('flipped');
             
-            isFlipped = false;
-            document.getElementById('card-meaning').classList.add('hidden');
-            document.getElementById('progress').textContent = `${currentIndex + 1} / ${vocabularyList.length}`;
+            setTimeout(() => {
+                document.getElementById('study-word').textContent = current.word;
+                document.getElementById('study-meaning').textContent = current.meaning;
+                document.getElementById('study-sentence').textContent = current.sentence;
+                document.getElementById('study-sentence-meaning').textContent = current.sentenceMeaning;
+                document.getElementById('study-progress').textContent = `${studyIndex + 1} / ${vocabularyList.length}`;
+            }, 150);
         }
 
-        function flipCard() {
-            isFlipped = !isFlipped;
-            const meaningElem = document.getElementById('card-meaning');
-            if (isFlipped) {
-                meaningElem.classList.remove('hidden');
-                speakWord();
-            } else {
-                meaningElem.classList.add('hidden');
+        function nextStudyWord() {
+            studyIndex = (studyIndex + 1) % vocabularyList.length;
+            updateStudyCard();
+        }
+
+        function prevStudyWord() {
+            studyIndex = (studyIndex - 1 + vocabularyList.length) % vocabularyList.length;
+            updateStudyCard();
+        }
+
+        /* --- 2. テスト機能 --- */
+        function startTest() {
+            const countRadio = document.querySelector('input[name="q-count"]:checked').value;
+            const transRadio = document.querySelector('input[name="show-trans"]:checked').value;
+
+            showTranslationOption = (transRadio === 'yes');
+            const qCount = parseInt(countRadio);
+
+            // ランダムに問題を作成
+            const shuffled = [...vocabularyList].sort(() => Math.random() - 0.5);
+            testQuestions = shuffled.slice(0, Math.min(qCount, vocabularyList.length));
+
+            currentTestIdx = 0;
+            testScore = 0;
+
+            document.getElementById('test-setup').style.display = 'none';
+            document.getElementById('test-result').style.display = 'none';
+            document.getElementById('test-play').style.display = 'block';
+
+            renderTestQuestion();
+        }
+
+        // 例文中の該当単語部分を ____ に置換する関数
+        function makeBlank(sentence, word) {
+            const cleanWord = word.replace(/[~\[\]()]/g, '').trim().split(' ')[0];
+            const stem = cleanWord.substring(0, Math.min(cleanWord.length, 3));
+            const regex = new RegExp(`\\b${stem}[a-z]*\\b`, 'gi');
+            
+            if (regex.test(sentence)) {
+                return sentence.replace(regex, '____');
             }
+            return sentence.replace(cleanWord, '____');
         }
 
-        function nextWord() {
-            currentIndex = (currentIndex + 1) % vocabularyList.length;
-            showCurrentCard();
-        }
+        function renderTestQuestion() {
+            const current = testQuestions[currentTestIdx];
+            document.getElementById('next-quiz-btn').style.display = 'none';
+            document.getElementById('test-progress').textContent = `第 ${currentTestIdx + 1} / ${testQuestions.length} 問`;
+            document.getElementById('test-score').textContent = `正解: ${testScore}`;
 
-        function prevWord() {
-            currentIndex = (currentIndex - 1 + vocabularyList.length) % vocabularyList.length;
-            showCurrentCard();
-        }
+            // 穴埋め文章の生成
+            const blankSentence = makeBlank(current.sentence, current.word);
+            document.getElementById('quiz-question').textContent = blankSentence;
 
-        function speakWord() {
-            const current = vocabularyList[currentIndex];
-            // 記号や括弧を取り除いて発音
-            const cleanWord = current.word.replace(/[~\[\]()]/g, '').trim();
-            const utterance = new SpeechSynthesisUtterance(cleanWord);
-            utterance.lang = 'en-US';
-            speechSynthesis.speak(utterance);
-        }
-
-        function switchMode(mode) {
-            if (mode === 'card') {
-                document.getElementById('card-mode').classList.remove('hidden');
-                document.getElementById('list-mode').classList.add('hidden');
+            const transElem = document.getElementById('quiz-trans');
+            if (showTranslationOption) {
+                transElem.textContent = current.sentenceMeaning;
+                transElem.style.display = 'block';
             } else {
-                document.getElementById('card-mode').classList.add('hidden');
-                document.getElementById('list-mode').classList.remove('hidden');
+                transElem.style.display = 'none';
             }
-        }
 
-        function renderList() {
-            const ul = document.getElementById('vocabulary-list-ul');
-            ul.innerHTML = '';
-            vocabularyList.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'word-item';
-                li.innerHTML = `<strong>${item.word}</strong> <span>${item.meaning}</span>`;
-                ul.appendChild(li);
+            // 4択選択肢の生成
+            let choices = [current];
+            while (choices.length < 4) {
+                const rand = vocabularyList[Math.floor(Math.random() * vocabularyList.length)];
+                if (!choices.some(c => c.word === rand.word)) {
+                    choices.push(rand);
+                }
+            }
+            choices.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            choices.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.dataset.word = item.word;
+                card.innerHTML = `
+                    <div class="option-word">${item.word}</div>
+                    <div class="option-meaning">${item.meaning}</div>
+                `;
+                card.onclick = () => selectAnswer(card, item, current);
+                optionsContainer.appendChild(card);
             });
         }
 
-        window.onload = init;
+        function selectAnswer(selectedCard, selectedItem, correctItem) {
+            const allCards = document.querySelectorAll('.option-card');
+            allCards.forEach(c => c.onclick = null); // 1回クリックしたらロック
+
+            // すべての選択肢の下に日本語訳を表示
+            document.querySelectorAll('.option-meaning').forEach(m => m.style.display = 'block');
+
+            if (selectedItem.word === correctItem.word) {
+                // 正解：選んだカードの枠が緑色に発光
+                selectedCard.classList.add('correct-glow');
+                testScore++;
+            } else {
+                // 不正解：正解のカードの枠が赤色に発光
+                allCards.forEach(card => {
+                    if (card.dataset.word === correctItem.word) {
+                        card.classList.add('wrong-glow');
+                    }
+                });
+
+                // 間違えた問題リストに追加（重複排除）
+                if (!wrongList.some(w => w.word === correctItem.word)) {
+                    wrongList.push(correctItem);
+                }
+            }
+
+            document.getElementById('next-quiz-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentTestIdx++;
+            if (currentTestIdx < testQuestions.length) {
+                renderTestQuestion();
+            } else {
+                // テスト結果表示
+                document.getElementById('test-play').style.display = 'none';
+                document.getElementById('test-result').style.display = 'block';
+                document.getElementById('result-score-text').textContent = 
+                    `結果: ${testQuestions.length}問中 ${testScore}問 正解！`;
+            }
+        }
+
+        function resetTestSetup() {
+            document.getElementById('test-result').style.display = 'none';
+            document.getElementById('test-setup').style.display = 'block';
+        }
+
+        /* --- 3. 間違えた問題機能 --- */
+        function updateWrongView() {
+            const cardView = document.getElementById('wrong-card-view');
+            const emptyMsg = document.getElementById('wrong-empty');
+
+            if (wrongList.length === 0) {
+                cardView.style.display = 'none';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+
+            cardView.style.display = 'block';
+            emptyMsg.style.display = 'none';
+
+            if (wrongIndex >= wrongList.length) wrongIndex = 0;
+            const current = wrongList[wrongIndex];
+
+            document.getElementById('wrong-card').parentElement.classList.remove('flipped');
+            
+            setTimeout(() => {
+                document.getElementById('wrong-word').textContent = current.word;
+                document.getElementById('wrong-meaning').textContent = current.meaning;
+                document.getElementById('wrong-sentence').textContent = current.sentence;
+                document.getElementById('wrong-sentence-meaning').textContent = current.sentenceMeaning;
+                document.getElementById('wrong-progress').textContent = `${wrongIndex + 1} / ${wrongList.length}`;
+            }, 150);
+        }
+
+        function nextWrongWord() {
+            if (wrongList.length === 0) return;
+            wrongIndex = (wrongIndex + 1) % wrongList.length;
+            updateWrongView();
+        }
+
+        function prevWrongWord() {
+            if (wrongList.length === 0) return;
+            wrongIndex = (wrongIndex - 1 + wrongList.length) % wrongList.length;
+            updateWrongView();
+        }
+
+        // 初期化
+        window.onload = () => {
+            updateStudyCard();
+        };
     </script>
 </body>
 </html>
