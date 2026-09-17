@@ -35,7 +35,10 @@
             display: flex;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
             box-sizing: border-box;
         }
 
@@ -112,6 +115,7 @@
             width: 100%;
             max-width: 500px;
             padding: 20px;
+            margin-top: 60px;
             box-sizing: border-box;
         }
 
@@ -123,33 +127,18 @@
             display: block;
         }
 
-        /* ボタン共通スタイル */
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
+        /* 勉強用：一列に並ぶカードコンテナ */
+        .study-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-
-        /* 3D フリップカード (勉強用 & 間違えた問題) */
+        /* 3D フリップカード共通 */
         .card-container {
             perspective: 1000px;
             width: 100%;
-            height: 260px;
-            margin-bottom: 20px;
+            height: 220px;
             cursor: pointer;
         }
 
@@ -172,18 +161,27 @@
             height: 100%;
             backface-visibility: hidden;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
             background: var(--card-bg);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 18px;
             box-sizing: border-box;
         }
 
         .card-front {
             border: 2px dashed #e0e0e0;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            font-size: 12px;
+            color: #aaa;
+            font-weight: bold;
         }
 
         .card-back {
@@ -194,7 +192,7 @@
         }
 
         .card-word {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             color: var(--primary-color);
         }
@@ -202,25 +200,48 @@
         .card-hint {
             font-size: 12px;
             color: #aaa;
-            margin-top: 15px;
+            margin-top: 12px;
         }
 
         .card-back .meaning {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: var(--correct-color);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .card-back .sentence {
-            font-size: 15px;
-            margin-bottom: 5px;
+            font-size: 14px;
+            margin-bottom: 4px;
             color: #444;
+            line-height: 1.4;
         }
 
         .card-back .sentence-meaning {
-            font-size: 13px;
+            font-size: 12px;
             color: #666;
+            line-height: 1.4;
+        }
+
+        /* ボタン共通スタイル */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
         }
 
         .controls {
@@ -319,10 +340,9 @@
             font-size: 13px;
             color: #666;
             margin-top: 4px;
-            display: none; /* 回答後に表示 */
+            display: none;
         }
 
-        /* 正解・不正解の光る枠エフェクト */
         .option-card.correct-glow {
             border-color: var(--correct-color) !important;
             box-shadow: 0 0 12px rgba(40, 167, 69, 0.8) !important;
@@ -363,31 +383,15 @@
     </nav>
 
     <main>
-        <!-- 1. 勉強用ページ -->
+        <!-- 1. 勉強用ページ（一列にカードが並ぶ形式） -->
         <div id="page-study" class="page active">
-            <div class="card-container" onclick="flipCard('study-card')">
-                <div class="card-inner" id="study-card">
-                    <div class="card-front">
-                        <div class="card-word" id="study-word">Word</div>
-                        <div class="card-hint">タップして裏返す</div>
-                    </div>
-                    <div class="card-back">
-                        <div class="meaning" id="study-meaning">日本語訳</div>
-                        <div class="sentence" id="study-sentence">例文</div>
-                        <div class="sentence-meaning" id="study-sentence-meaning">例文訳</div>
-                    </div>
-                </div>
-            </div>
-            <div class="controls">
-                <button class="btn btn-secondary" onclick="prevStudyWord()">前へ</button>
-                <span id="study-progress">1 / 50</span>
-                <button class="btn" onclick="nextStudyWord()">次へ</button>
+            <div id="study-list" class="study-list">
+                <!-- JSで全50個のカードが一列に自動生成されます -->
             </div>
         </div>
 
         <!-- 2. テストページ -->
         <div id="page-test" class="page">
-            <!-- テスト設定画面 -->
             <div id="test-setup" class="setting-group">
                 <h3>テスト設定</h3>
                 <div class="setting-item">
@@ -409,7 +413,6 @@
                 <button class="btn" style="width: 100%;" onclick="startTest()">テスト開始</button>
             </div>
 
-            <!-- テスト実行画面 -->
             <div id="test-play" class="test-box" style="display: none;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; color: #666;">
                     <span id="test-progress">第 1 問</span>
@@ -424,7 +427,6 @@
                 <button id="next-quiz-btn" class="btn" style="width: 100%; display: none;" onclick="nextQuestion()">次の問題へ</button>
             </div>
 
-            <!-- テスト結果画面 -->
             <div id="test-result" class="setting-group" style="display: none; text-align: center;">
                 <h3>テスト終了！</h3>
                 <p id="result-score-text" style="font-size: 20px; font-weight: bold; margin: 20px 0;"></p>
@@ -435,7 +437,7 @@
         <!-- 3. 間違えた問題ページ -->
         <div id="page-wrong" class="page">
             <div id="wrong-card-view">
-                <div class="card-container" onclick="flipCard('wrong-card')">
+                <div class="card-container" onclick="this.classList.toggle('flipped')">
                     <div class="card-inner" id="wrong-card">
                         <div class="card-front">
                             <div class="card-word" id="wrong-word">Word</div>
@@ -448,7 +450,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="controls">
+                <div class="controls" style="margin-top: 15px;">
                     <button class="btn btn-secondary" onclick="prevWrongWord()">前へ</button>
                     <span id="wrong-progress">1 / 1</span>
                     <button class="btn" onclick="nextWrongWord()">次へ</button>
@@ -461,7 +463,6 @@
     </main>
 
     <script>
-        // 画像内50単語データセット
         const vocabularyList = [
             { word: "vote", meaning: "投票をする、を投票で決める", sentence: "I voted for her in the election.", sentenceMeaning: "私は選挙で彼女に投票した。" },
             { word: "president", meaning: "大統領、社長、会長", sentence: "The new president was elected after a close race.", sentenceMeaning: "接戦の末、新大統領が選出された。" },
@@ -515,18 +516,15 @@
             { word: "work on", meaning: "〜に取り組む、〜に働きかける", sentence: "I'm working on my presentation for tomorrow.", sentenceMeaning: "私は明日プレゼンの準備に取り組んでいるところだ。" }
         ];
 
-        // 状態変数
-        let studyIndex = 0;
         let wrongIndex = 0;
         let wrongList = [];
 
-        // テスト関連変数
         let testQuestions = [];
         let currentTestIdx = 0;
         let testScore = 0;
         let showTranslationOption = true;
 
-        // ページ切替 & ナビゲーション
+        // ナビゲーション
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('active');
@@ -544,36 +542,33 @@
             document.getElementById('page-title').textContent = titles[pageName];
             document.getElementById(`page-${pageName}`).classList.add('active');
 
-            if (pageName === 'study') updateStudyCard();
             if (pageName === 'wrong') updateWrongView();
         }
 
-        function flipCard(cardId) {
-            document.getElementById(cardId).parentElement.classList.toggle('flipped');
-        }
+        /* --- 1. 勉強用：一列に全カードを出力 --- */
+        function renderStudyList() {
+            const listElem = document.getElementById('study-list');
+            listElem.innerHTML = '';
 
-        /* --- 1. 勉強用機能 --- */
-        function updateStudyCard() {
-            const current = vocabularyList[studyIndex];
-            document.getElementById('study-card').parentElement.classList.remove('flipped');
-            
-            setTimeout(() => {
-                document.getElementById('study-word').textContent = current.word;
-                document.getElementById('study-meaning').textContent = current.meaning;
-                document.getElementById('study-sentence').textContent = current.sentence;
-                document.getElementById('study-sentence-meaning').textContent = current.sentenceMeaning;
-                document.getElementById('study-progress').textContent = `${studyIndex + 1} / ${vocabularyList.length}`;
-            }, 150);
-        }
-
-        function nextStudyWord() {
-            studyIndex = (studyIndex + 1) % vocabularyList.length;
-            updateStudyCard();
-        }
-
-        function prevStudyWord() {
-            studyIndex = (studyIndex - 1 + vocabularyList.length) % vocabularyList.length;
-            updateStudyCard();
+            vocabularyList.forEach((item, index) => {
+                const cardHTML = `
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-number">No. ${index + 1}</div>
+                                <div class="card-word">${item.word}</div>
+                                <div class="card-hint">タップして裏返す</div>
+                            </div>
+                            <div class="card-back">
+                                <div class="meaning">${item.meaning}</div>
+                                <div class="sentence">${item.sentence}</div>
+                                <div class="sentence-meaning">${item.sentenceMeaning}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listElem.innerHTML += cardHTML;
+            });
         }
 
         /* --- 2. テスト機能 --- */
@@ -584,7 +579,6 @@
             showTranslationOption = (transRadio === 'yes');
             const qCount = parseInt(countRadio);
 
-            // ランダムに問題を作成
             const shuffled = [...vocabularyList].sort(() => Math.random() - 0.5);
             testQuestions = shuffled.slice(0, Math.min(qCount, vocabularyList.length));
 
@@ -598,7 +592,6 @@
             renderTestQuestion();
         }
 
-        // 例文中の該当単語部分を ____ に置換する関数
         function makeBlank(sentence, word) {
             const cleanWord = word.replace(/[~\[\]()]/g, '').trim().split(' ')[0];
             const stem = cleanWord.substring(0, Math.min(cleanWord.length, 3));
@@ -616,7 +609,6 @@
             document.getElementById('test-progress').textContent = `第 ${currentTestIdx + 1} / ${testQuestions.length} 問`;
             document.getElementById('test-score').textContent = `正解: ${testScore}`;
 
-            // 穴埋め文章の生成
             const blankSentence = makeBlank(current.sentence, current.word);
             document.getElementById('quiz-question').textContent = blankSentence;
 
@@ -628,7 +620,6 @@
                 transElem.style.display = 'none';
             }
 
-            // 4択選択肢の生成
             let choices = [current];
             while (choices.length < 4) {
                 const rand = vocabularyList[Math.floor(Math.random() * vocabularyList.length)];
@@ -656,24 +647,20 @@
 
         function selectAnswer(selectedCard, selectedItem, correctItem) {
             const allCards = document.querySelectorAll('.option-card');
-            allCards.forEach(c => c.onclick = null); // 1回クリックしたらロック
+            allCards.forEach(c => c.onclick = null);
 
-            // すべての選択肢の下に日本語訳を表示
             document.querySelectorAll('.option-meaning').forEach(m => m.style.display = 'block');
 
             if (selectedItem.word === correctItem.word) {
-                // 正解：選んだカードの枠が緑色に発光
                 selectedCard.classList.add('correct-glow');
                 testScore++;
             } else {
-                // 不正解：正解のカードの枠が赤色に発光
                 allCards.forEach(card => {
                     if (card.dataset.word === correctItem.word) {
                         card.classList.add('wrong-glow');
                     }
                 });
 
-                // 間違えた問題リストに追加（重複排除）
                 if (!wrongList.some(w => w.word === correctItem.word)) {
                     wrongList.push(correctItem);
                 }
@@ -687,7 +674,6 @@
             if (currentTestIdx < testQuestions.length) {
                 renderTestQuestion();
             } else {
-                // テスト結果表示
                 document.getElementById('test-play').style.display = 'none';
                 document.getElementById('test-result').style.display = 'block';
                 document.getElementById('result-score-text').textContent = 
@@ -740,9 +726,8 @@
             updateWrongView();
         }
 
-        // 初期化
         window.onload = () => {
-            updateStudyCard();
+            renderStudyList();
         };
     </script>
 </body>
